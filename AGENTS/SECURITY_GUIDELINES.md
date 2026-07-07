@@ -11,10 +11,10 @@ Security is a first-class concern across the entire stack. All agents must follo
 *   **Never** store JWTs in `localStorage`, `sessionStorage`, or any JavaScript-accessible storage. This is a hard rule — XSS vulnerabilities can steal those tokens.
 
 ### Token Lifecycle
-*   **Access Token:** Short-lived (e.g., 15 minutes).
-*   **Refresh Token:** Longer-lived (e.g., 7 days), also stored in an `HttpOnly` cookie.
-*   **Refresh Token Rotation:** Every time a refresh token is used to issue a new access token, the old refresh token is invalidated and a new one is issued. This prevents token replay attacks.
-*   Store a hash of the refresh token in the database (a `refresh_token_hash` column on `users`) to enable server-side invalidation on logout.
+*   A single **access token** is issued on login and stored in the `HttpOnly` cookie described above. It *is* the session.
+*   Expiry is configurable via `JWT_EXPIRES_IN` (default `7d` for this assignment — long enough for a smooth demo, short enough to bound exposure).
+*   **Logout** clears the cookie. Because the token is stateless, do not rely on server-side revocation; keep the expiry modest.
+*   **Refresh-token rotation is intentionally out of scope** for this project, to keep the auth surface small and the codebase focused. If it is added later: store only a *hash* of the refresh token server-side (a `refresh_token_hash` column on `users`) and rotate it on every use so old tokens can't be replayed.
 
 ### Password Security
 *   Hash passwords using `bcrypt` (minimum 12 rounds) or `argon2id`.
@@ -29,6 +29,7 @@ Security is a first-class concern across the entire stack. All agents must follo
 *   Every protected route must have `@UseGuards(JwtAuthGuard)`.
 *   Manager-only routes additionally require `@UseGuards(JwtAuthGuard, RolesGuard)` and `@Roles('MANAGER')`.
 *   The role is read from the **validated JWT payload** — never from the request body or query parameter.
+*   **Registration always creates a `TEAM_MEMBER`.** The `register` endpoint must ignore (or reject) any client-supplied `role` field — this prevents privilege escalation at signup. Promotion to `MANAGER` happens only via `PATCH /users/:id` performed by an existing Manager.
 
 ### Data Ownership Enforcement
 *   For Team Member report endpoints (`GET /reports/my`, `PATCH /reports/:id`), the service layer **must** filter by `userId` extracted from the JWT, not from the request. Example:
@@ -93,18 +94,16 @@ Security is a first-class concern across the entire stack. All agents must follo
 *   Required environment variables:
     ```
     DATABASE_URL=
-    JWT_ACCESS_SECRET=
-    JWT_REFRESH_SECRET=
-    JWT_ACCESS_EXPIRES_IN=15m
-    JWT_REFRESH_EXPIRES_IN=7d
+    JWT_SECRET=
+    JWT_EXPIRES_IN=7d
     FRONTEND_URL=http://localhost:3000
-    OPENAI_API_KEY=           # or ANTHROPIC_API_KEY (Bonus)
+    ANTHROPIC_API_KEY=        # Bonus — AI Chat Assistant
     ```
 
 ---
 
 ## 6. Response Security & Data Leakage Prevention
 
-*   **Never return `password_hash`** or `refresh_token_hash` in any API response. Use Prisma `select` to explicitly exclude sensitive fields, or use a global `ClassSerializerInterceptor` with `@Exclude()` decorators on the User entity.
+*   **Never return `password_hash`** (or any future credential field such as a `refresh_token_hash`) in any API response. Use Prisma `select` to explicitly exclude sensitive fields, or a global `ClassSerializerInterceptor` with `@Exclude()` decorators on the User entity.
 *   **Error messages must not leak internal details** (stack traces, DB error messages, file paths) to the client. Use an `AllExceptionsFilter` to sanitize error responses in production.
 *   Validate that `project_id` values in report creation requests are real, active projects.

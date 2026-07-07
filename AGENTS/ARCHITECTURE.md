@@ -8,7 +8,7 @@ This document outlines the definitive architectural decisions for the Weekly Rep
 
 | Layer | Technology | Notes |
 |---|---|---|
-| Monorepo | Turborepo or Nx | Shares types, configs, utilities |
+| Monorepo | Turborepo | Shares types, configs, utilities |
 | Frontend | Next.js 14+ (App Router) | React, TypeScript |
 | Styling | TailwindCSS | Utility-first, see `UI_UX_DESIGN.md` |
 | Data Fetching | TanStack Query v5 | All server state on frontend |
@@ -17,7 +17,7 @@ This document outlines the definitive architectural decisions for the Weekly Rep
 | Auth Library | Passport.js | JWT strategy |
 | Database | Neon (Serverless PostgreSQL) | Cloud-hosted, free tier, no local DB needed |
 | ORM | Prisma | Type-safe queries, migrations |
-| AI Module | OpenAI / Anthropic Claude | Bonus feature |
+| AI Module | Anthropic Claude | Bonus feature |
 
 ---
 
@@ -71,10 +71,12 @@ This document outlines the definitive architectural decisions for the Weekly Rep
 ### Base URL
 All API endpoints are prefixed: `/api/v1`
 
+In development the API listens on `http://localhost:3001` and the Next.js app on `http://localhost:3000`. The browser reaches the API through a Next.js rewrite/proxy so requests stay same-origin and the auth cookie is always sent. Both hosts share the `localhost` site, so `SameSite=Strict` cookies are delivered across the two ports.
+
 ### Authentication Endpoints
 | Method | Endpoint | Access | Description |
 |---|---|---|---|
-| POST | `/api/v1/auth/register` | Public | Register new user |
+| POST | `/api/v1/auth/register` | Public | Register new user — **always assigned `TEAM_MEMBER`** (client-supplied role is ignored; see `SECURITY_GUIDELINES.md §2`) |
 | POST | `/api/v1/auth/login` | Public | Login, returns HttpOnly cookie |
 | POST | `/api/v1/auth/logout` | Authenticated | Clears auth cookie |
 | GET | `/api/v1/auth/me` | Authenticated | Returns current user profile |
@@ -102,7 +104,9 @@ All API endpoints are prefixed: `/api/v1`
 | GET | `/api/v1/projects` | Authenticated | List all active projects |
 | POST | `/api/v1/projects` | Manager | Create project |
 | PATCH | `/api/v1/projects/:id` | Manager | Update project |
-| DELETE | `/api/v1/projects/:id` | Manager | Soft-delete project |
+| DELETE | `/api/v1/projects/:id` | Manager | Soft-delete project (`is_active = false`) |
+| POST | `/api/v1/projects/:id/members` | Manager | Assign a member to a project *(optional feature)* |
+| DELETE | `/api/v1/projects/:id/members/:userId` | Manager | Unassign a member from a project *(optional feature)* |
 
 ### Dashboard Endpoints
 | Method | Endpoint | Access | Description |
@@ -111,6 +115,7 @@ All API endpoints are prefixed: `/api/v1`
 | GET | `/api/v1/dashboard/charts/trend` | Manager | Tasks completed trend over time |
 | GET | `/api/v1/dashboard/charts/status` | Manager | Submission status by member |
 | GET | `/api/v1/dashboard/charts/workload` | Manager | Workload by project |
+| GET | `/api/v1/dashboard/activity` | Manager | Recent reports / activity feed |
 
 ### AI Endpoints (Bonus)
 | Method | Endpoint | Access | Description |
@@ -156,7 +161,8 @@ All API endpoints are prefixed: `/api/v1`
 ---
 
 ## 5. Authentication & Authorization Flow
-1.  **Login:** User POSTs credentials → NestJS validates → Issues JWT → Sets `HttpOnly; Secure; SameSite=Strict` cookie.
+0.  **Register:** User POSTs credentials → NestJS creates the user with the **`TEAM_MEMBER`** role (any client-supplied role is ignored). Promotion to `MANAGER` happens only via `PATCH /users/:id` by an existing Manager.
+1.  **Login:** User POSTs credentials → NestJS validates → Issues a single stateless **access token (JWT)** → Sets `HttpOnly; Secure; SameSite=Strict` cookie. This token *is* the session; there is no refresh-token flow (see `SECURITY_GUIDELINES.md §1`).
 2.  **Request Auth:** Each subsequent request automatically sends the cookie → NestJS `JwtAuthGuard` validates the token on every protected route.
 3.  **Role Check:** `RolesGuard` reads the `role` from the validated JWT payload and checks against the `@Roles('MANAGER')` decorator on the controller method.
 4.  **Frontend Guard:** Next.js `middleware.ts` reads the auth cookie → Redirects unauthenticated users to `/login` → Redirects `TEAM_MEMBER` users away from `/manager/*` routes.
@@ -168,7 +174,7 @@ All API endpoints are prefixed: `/api/v1`
 *   When a Manager sends a chat message, the `AiService`:
     1.  Fetches relevant reports from PostgreSQL for the current/recent week.
     2.  Formats the data into a structured text context block.
-    3.  Constructs a prompt and calls the LLM API (Claude/OpenAI).
+    3.  Constructs a prompt and calls the Anthropic Claude API.
     4.  Streams or returns the response to the frontend.
 *   The chat widget is located in the Manager Dashboard layout.
 *   **Privacy:** Report data sent to an external LLM provider must be documented in the project presentation. Consider anonymizing data if needed.

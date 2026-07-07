@@ -11,6 +11,16 @@ To maintain high code quality and long-term maintainability, all AI agents and d
 *   **KISS:** Favor simple, readable solutions over clever ones.
 *   **No Magic Numbers/Strings:** Extract all literals into named constants.
 
+### SOLID Principles
+
+SOLID governs both the NestJS backend (modules, services, providers) and the React frontend (components, hooks). Apply it pragmatically — the goal is testable, low-coupling code, not ceremony.
+
+*   **S — Single Responsibility:** Every class, service, hook, or component has exactly one reason to change. `ReportsService` handles report logic only — it does not send email or format HTTP responses. A React component either orchestrates/fetches *or* renders — not both.
+*   **O — Open/Closed:** Open for extension, closed for modification. Add behaviour through new providers, guards, strategies, or props — not by growing `if/switch` ladders inside stable code. A new status rule is a new strategy/guard, not another branch bolted onto an existing method.
+*   **L — Liskov Substitution:** Any implementation must be usable wherever its interface is expected, with no surprises. A mocked `PrismaService` in tests must honour the same contract as the real one; never override a method just to throw "not supported."
+*   **I — Interface Segregation:** Prefer small, focused contracts over one fat one. `CreateReportDto` and `UpdateReportDto` are separate rather than a single partial-everything DTO. Components receive only the props they actually use.
+*   **D — Dependency Inversion:** Depend on abstractions, not concretions. Use NestJS constructor **dependency injection** everywhere — never `new SomeService()`. Services receive `PrismaService`, config, and collaborators through the DI container; this is what makes them swappable and testable.
+
 ---
 
 ## 2. Naming Conventions
@@ -48,8 +58,8 @@ Every feature (Auth, Users, Reports, Projects, Dashboard, AI) must be its own Ne
 | Layer | Responsibility | What it MUST NOT do |
 |---|---|---|
 | **Controller** | Parse request, call service, return response | Contain business logic or DB calls |
-| **Service** | All business logic | Directly use Prisma client |
-| **Prisma Service / Repository** | All database queries | Contain business logic |
+| **Service** | All business logic **and** its own DB access via the injected `PrismaService` | Handle HTTP concerns (parsing req/res, setting status codes) |
+| **PrismaService** | Thin wrapper over the Prisma client — connection lifecycle only | Contain business logic |
 | **Guard** | Auth & role checks | Anything else |
 | **Interceptor** | Transform responses, logging | Business logic |
 | **Filter** | Handle and format exceptions | Business logic |
@@ -86,7 +96,7 @@ Every feature (Auth, Users, Reports, Projects, Dashboard, AI) must be its own Ne
 
 ## 6. Design Patterns
 
-*   **Repository Pattern (Backend):** The database access layer is isolated in the Service layer via Prisma. Business logic never touches Prisma directly.
+*   **Data Access (Backend):** Services inject `PrismaService` and own their queries directly — the standard, pragmatic NestJS pattern for a project this size (no separate repository layer). Rules: queries live in services (never controllers); keep sensitive-field exclusion (`select`) at the query site; if a service's query set grows unwieldy, extract private query helper methods *within the same service* rather than adding a repository abstraction.
 *   **Custom Hook Pattern (Frontend):** Extract all API-related TanStack Query calls into domain-specific hooks (e.g., `useReports()`, `useProjects()`). Pages import hooks, not raw query functions.
 *   **Adapter/Transformer Pattern:** API responses are transformed into frontend-safe shapes in a dedicated `lib/adapters/` layer, not inside components.
 

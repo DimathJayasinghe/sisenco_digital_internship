@@ -163,7 +163,7 @@ The core business entity. Fixed schema — no dynamic fields.
 | `updated_at` | TIMESTAMP | NOT NULL |
 
 **Critical Constraints:**
-*   `UNIQUE(user_id, project_id, week_start_date)` — Prevents duplicate reports for the same project in the same week.
+*   `UNIQUE(user_id, week_start_date)` — **One report per team member per week.** The report carries a single `project_id` tag; a member files exactly one weekly report (matching the assignment's "one weekly report" model). This makes per-week compliance unambiguous.
 *   `CHECK (week_end_date > week_start_date)` — Data integrity.
 *   `CHECK (hours_worked >= 0 AND hours_worked <= 168)` — Max hours in a week.
 
@@ -178,11 +178,49 @@ The core business entity. Fixed schema — no dynamic fields.
 | `reports` | `user_id` | INDEX | Dashboard: filter by member |
 | `reports` | `project_id` | INDEX | Dashboard: filter by project |
 | `reports` | `week_start_date` | INDEX | Dashboard: filter by week |
-| `reports` | `(user_id, project_id, week_start_date)` | UNIQUE INDEX | Prevent duplicate reports |
+| `reports` | `(user_id, week_start_date)` | UNIQUE INDEX | One report per member per week |
 
 ---
 
-## 5. Prisma Implementation Notes
+## 5. Status & Compliance Semantics
+
+This section is the single source of truth for how `status`, "pending", "late", and the compliance metric are derived. It resolves the gap between the stored `reports.status` enum and the dashboard's *submitted / pending / late* language.
+
+### Stored vs. derived states
+*   **Stored** on `reports.status`: `DRAFT`, `SUBMITTED`, `LATE`.
+*   **Derived** (never stored): **`PENDING`** — the *absence* of a submitted report for an expected member in a given week. A member sitting on a `DRAFT` (or with no row at all) is `PENDING` for dashboard purposes.
+
+### The weekly deadline (no deadline column by design)
+A per-report `deadline` column would be redundant — it is fully derivable from `week_end_date`. The deadline is:
+
+```
+deadline = end of week_end_date (23:59:59) + SUBMISSION_GRACE_DAYS
+```
+
+`SUBMISSION_GRACE_DAYS` is a single application constant (default `0`), avoiding a settings table for this assignment while leaving room to grow.
+
+### How `LATE` is set — at submit time, not by a job
+`LATE` is decided deterministically when the member submits, so no cron/background worker is needed:
+*   `POST /reports/:id/submit` compares `now()` to the deadline and always sets `submitted_at = now()`.
+*   `now() <= deadline` → `status = SUBMITTED`.
+*   `now()  > deadline` → `status = LATE`.
+*   A `DRAFT` that is never submitted stays `DRAFT` and counts as `PENDING`.
+
+### Compliance & "pending" (dashboard)
+Computed at query time against the **expected reporter set** = all active users with the `TEAM_MEMBER` role:
+
+```
+expectedMembers  = count(active users where role = TEAM_MEMBER)
+submittedMembers = count(distinct user_id in reports for the week where status IN ('SUBMITTED','LATE'))
+pendingMembers   = expectedMembers − submittedMembers
+complianceRate   = submittedMembers / expectedMembers      // 0 when expectedMembers = 0
+```
+
+This single definition backs both the compliance metric card and the per-member status column on the Manager dashboard.
+
+---
+
+## 6. Prisma Implementation Notes
 
 ```prisma
 // Key Prisma directives to use:
@@ -197,7 +235,7 @@ model User {
 
 model Report {
   // ...
-  @@unique([userId, projectId, weekStartDate])
+  @@unique([userId, weekStartDate])
   @@index([userId])
   @@index([projectId])
   @@index([weekStartDate])

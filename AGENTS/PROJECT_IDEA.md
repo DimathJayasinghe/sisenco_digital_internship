@@ -12,8 +12,8 @@ A full-stack web application that solves the problem of scattered, unstructured 
 | Backend | NestJS (Node.js, TypeScript) |
 | Database | PostgreSQL + Prisma ORM |
 | Data Fetching | TanStack Query v5 |
-| Architecture | Monorepo (Turborepo or Nx) |
-| AI (Bonus) | Anthropic Claude / OpenAI |
+| Architecture | Monorepo (Turborepo) |
+| AI (Bonus) | Anthropic Claude |
 
 ---
 
@@ -42,7 +42,7 @@ A full-stack web application that solves the problem of scattered, unstructured 
 ### 4.1 Authentication & Roles
 *   **Roles:** `TEAM_MEMBER` and `MANAGER`.
 *   **Features:** User registration, login/logout, secure session (HttpOnly JWT cookie), role-based route protection.
-*   Role can be assigned by an Admin/Manager or at signup.
+*   New signups **always** start as `TEAM_MEMBER`; a Manager promotes users to `MANAGER` via the Users endpoint. No role selection at signup — this prevents privilege escalation.
 
 ### 4.2 Personal Weekly Report Page (Team Member)
 *   **Fixed Fields (no user customization):**
@@ -59,7 +59,7 @@ A full-stack web application that solves the problem of scattered, unstructured 
 ### 4.3 Team Dashboard (Manager View)
 *   View all team members' reports for a selected week.
 *   **Filters:** by team member, by project/category, by date range.
-*   Track **submission status** per member: `SUBMITTED`, `DRAFT`, `LATE`.
+*   Track **submission status** per member for the week: `SUBMITTED`, `LATE`, or `PENDING` (no submitted report yet — a lingering `DRAFT` still counts as pending). Exact compliance semantics live in `DATABASE.md §5`.
 
 ### 4.4 Projects & Categories
 *   Managers can: Add, Edit, Delete (soft-delete via `is_active`) projects.
