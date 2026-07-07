@@ -1,0 +1,31 @@
+# Dependencies (installed fresh inside the image)
+**/node_modules
+
+# Build & tooling output
+**/dist
+**/.next
+**/.turbo
+**/coverage
+**/*.tsbuildinfo
+
+# Git & CI
+.git
+.gitignore
+.github
+.husky
+
+# Environment / secrets — never bake into an image
+**/.env
+**/.env.*
+!**/.env.example
+
+# Docs & local session log
+AGENTS
+CHAT_HISTORY.md
+README.md
+*.md
+
+# Editor / OS
+.idea
+.vscode
+.DS_Store
