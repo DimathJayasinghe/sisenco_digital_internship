@@ -23,7 +23,11 @@ COPY package.json package-lock.json ./
 COPY apps/api/package.json apps/api/
 COPY apps/web/package.json apps/web/
 COPY packages/shared-types/package.json packages/shared-types/
-RUN npm ci --omit=dev --ignore-scripts
+# Drop the root "prepare" (husky) script only — it has no binary in a
+# --omit=dev install. Native addons (e.g. bcrypt) still need their own
+# install/postinstall scripts to run, so this must not be --ignore-scripts.
+RUN npm pkg delete scripts.prepare \
+  && npm ci --omit=dev
 
 # ─────────────────────────────────────────────────────────────
 # builder — full install, then build shared-types + generate the
