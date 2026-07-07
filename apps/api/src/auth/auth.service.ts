@@ -1,9 +1,9 @@
 import { ConflictException, Injectable, UnauthorizedException } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
 import { JwtService } from '@nestjs/jwt';
-import { Prisma } from '@prisma/client';
 import { AuthUser, Role, User } from '@sisenco/shared-types';
 import * as bcrypt from 'bcrypt';
+import { toSafeUser } from '../common/mappers';
 import { PrismaService } from '../common/prisma/prisma.service';
 import { BCRYPT_ROUNDS } from './auth.constants';
 import { LoginDto } from './dto/login.dto';
@@ -13,8 +13,6 @@ import { parseDurationMs } from './utils/duration.util';
 
 const INVALID_CREDENTIALS_MESSAGE = 'Invalid email or password';
 const DEFAULT_JWT_EXPIRES_IN = '7d';
-
-type UserWithRole = Prisma.UserGetPayload<{ include: { role: true } }>;
 
 /** The signed JWT plus how long the carrying cookie should live, in ms. */
 export interface Session {
@@ -53,7 +51,7 @@ export class AuthService {
       include: { role: true },
     });
 
-    return this.toSafeUser(user);
+    return toSafeUser(user);
   }
 
   /** Verifies credentials for login. Generic error on any failure — never reveals which field was wrong. */
@@ -68,7 +66,7 @@ export class AuthService {
       throw new UnauthorizedException(INVALID_CREDENTIALS_MESSAGE);
     }
 
-    return this.toSafeUser(user);
+    return toSafeUser(user);
   }
 
   /** Returns the full profile for the authenticated principal (used by GET /auth/me). */
@@ -82,7 +80,7 @@ export class AuthService {
       throw new UnauthorizedException(INVALID_CREDENTIALS_MESSAGE);
     }
 
-    return this.toSafeUser(user);
+    return toSafeUser(user);
   }
 
   /** Signs a new access token for `user` and sizes a cookie maxAge to match its expiry. */
@@ -93,19 +91,6 @@ export class AuthService {
     return {
       accessToken: this.jwtService.sign(payload),
       maxAge: parseDurationMs(expiresIn),
-    };
-  }
-
-  private toSafeUser(user: UserWithRole): User {
-    return {
-      id: user.id,
-      email: user.email,
-      firstName: user.firstName,
-      lastName: user.lastName,
-      // Safe: the only roles ever seeded/assigned are Role enum members (DATABASE.md §3).
-      role: user.role.name as Role,
-      createdAt: user.createdAt.toISOString(),
-      updatedAt: user.updatedAt.toISOString(),
     };
   }
 }
