@@ -1,0 +1,94 @@
+# Weekly Report Generator — full stack in containers.
+#
+#   cp .env.docker.example .env   # then edit secrets
+#   docker compose up --build
+#
+# Services:
+#   postgres      — local PostgreSQL (data persisted in the `pgdata` volume)
+#   api-migrate   — one-shot: pushes the Prisma schema + seeds roles/manager, then exits
+#   api           — NestJS REST API on :3001
+#   web           — Next.js app on :3000 (proxies /api/* to the api service)
+
+name: sisenco-weekly-reports
+
+services:
+  postgres:
+    image: postgres:16-alpine
+    restart: unless-stopped
+    environment:
+      POSTGRES_USER: ${POSTGRES_USER:-sisenco}
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:-sisenco}
+      POSTGRES_DB: ${POSTGRES_DB:-sisenco_reports}
+    ports:
+      - "${POSTGRES_PORT:-5432}:5432"
+    volumes:
+      - pgdata:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U ${POSTGRES_USER:-sisenco} -d ${POSTGRES_DB:-sisenco_reports}"]
+      interval: 5s
+      timeout: 5s
+      retries: 10
+
+  # Applies the schema and seeds the DB, then exits. Reuses the API image's
+  # `builder` stage because it carries the Prisma CLI + ts-node (the slim api
+  # runtime image does not).
+  api-migrate:
+    build:
+      context: .
+      dockerfile: apps/api/Dockerfile
+      target: builder
+    working_dir: /repo/apps/api
+    command: >
+      sh -c "npx prisma db push --schema prisma/schema.prisma --skip-generate --accept-data-loss
+      && npx prisma db seed"
+    environment:
+      DATABASE_URL: postgresql://${POSTGRES_USER:-sisenco}:${POSTGRES_PASSWORD:-sisenco}@postgres:5432/${POSTGRES_DB:-sisenco_reports}?schema=public
+      SEED_MANAGER_EMAIL: ${SEED_MANAGER_EMAIL:-manager@sisenco.local}
+      SEED_MANAGER_PASSWORD: ${SEED_MANAGER_PASSWORD:-ChangeMe123!}
+    depends_on:
+      postgres:
+        condition: service_healthy
+    restart: "no"
+
+  api:
+    build:
+      context: .
+      dockerfile: apps/api/Dockerfile
+      target: runner
+    restart: unless-stopped
+    environment:
+      NODE_ENV: production
+      PORT: 3001
+      DATABASE_URL: postgresql://${POSTGRES_USER:-sisenco}:${POSTGRES_PASSWORD:-sisenco}@postgres:5432/${POSTGRES_DB:-sisenco_reports}?schema=public
+      JWT_SECRET: ${JWT_SECRET:?set JWT_SECRET in .env}
+      JWT_EXPIRES_IN: ${JWT_EXPIRES_IN:-7d}
+      # The browser reaches the API only through the web proxy, so CORS trusts
+      # the public web origin.
+      FRONTEND_URL: ${FRONTEND_URL:-http://localhost:3000}
+      ANTHROPIC_API_KEY: ${ANTHROPIC_API_KEY:-}
+    ports:
+      - "${API_PORT:-3001}:3001"
+    depends_on:
+      postgres:
+        condition: service_healthy
+      api-migrate:
+        condition: service_completed_successfully
+
+  web:
+    build:
+      context: .
+      dockerfile: apps/web/Dockerfile
+      target: runner
+    restart: unless-stopped
+    environment:
+      NODE_ENV: production
+      PORT: 3000
+      # Server-side proxy target — the api service on the compose network.
+      API_URL: http://api:3001
+    ports:
+      - "${WEB_PORT:-3000}:3000"
+    depends_on:
+      - api
+
+volumes:
+  pgdata:
