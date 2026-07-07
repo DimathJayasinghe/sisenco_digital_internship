@@ -35,11 +35,14 @@ and seed already written, Docker Compose stack builds successfully. Feature modu
 - [x] `ParseUUIDPipe` on `:id` params for clean 400s on malformed ids
 - [x] Smoke-tested: manager can list/get/patch, team member gets 403, unauthenticated gets 401, bad UUID gets 400, missing user gets 404, role promotion via PATCH confirmed end-to-end (RolesGuard exercised for the first time)
 
-### 1.3 Projects Module
+### 1.3 Projects Module — CORE DONE (`feat/api-projects-module`); member assignment deferred
 
-- [ ] `CreateProjectDto` / `UpdateProjectDto`
-- [ ] `ProjectsService` (CRUD + soft-delete via `is_active`)
-- [ ] `ProjectsController` — list (authenticated), create/update/delete (Manager-only)
+- [x] `CreateProjectDto` / `UpdateProjectDto`
+- [x] `ProjectsService` (CRUD + soft-delete via `is_active`, unique-name conflict check on create/rename)
+- [x] `ProjectsController` — `GET /projects` (any authenticated user), `POST` / `PATCH /:id` / `DELETE /:id` (Manager-only)
+- [x] `toProjectDto` mapper added alongside `toSafeUser` in `common/mappers`
+- [x] Smoke-tested: unauthenticated 401, team member can list but not write (403), manager full CRUD, duplicate-name 409, soft-delete removes from the active list (`GET /projects` only returns `isActive: true`), 404 on missing id, `forbidNonWhitelisted` rejects a client-supplied `isActive`
+- [ ] **Deferred:** `POST/DELETE /projects/:id/members` (optional per `ARCHITECTURE.md`/`PROJECT_IDEA.md` §4.4 — "optional feature"). `UserProject` model already exists in the Prisma schema; not yet exposed via API. Revisit after Reports/Dashboard if time allows.
 
 ### 1.4 Reports Module
 
@@ -74,5 +77,6 @@ and seed already written, Docker Compose stack builds successfully. Feature modu
 ## Log
 
 - 2026-07-07 — Read all `AGENTS/*.md` docs. Confirmed existing scaffold: Prisma schema, seed script, common guards/decorators/filters/interceptors, and `shared-types` enums/interfaces are already implemented. Feature modules are empty stubs. Starting Phase 1 with the Auth module (`feat/api-auth-module`), since every other module depends on its guards/decorators.
+- 2026-07-07 — Implemented the Projects module core (`feat/api-projects-module`, branched from `feat/api-users-module`): list/create/update/soft-delete, list open to any authenticated user, writes Manager-only. Deferred the optional member-assignment endpoints. Typecheck/lint/build clean; smoke-tested against the Docker stack including soft-delete filtering and unique-name conflicts.
 - 2026-07-07 — Implemented the Users module (`feat/api-users-module`, branched from `feat/api-auth-module`): list/get/patch, all Manager-only. Refactored the user-safe-mapping logic out of `AuthService` into `common/mappers` to avoid duplicating it. Verified RolesGuard's 403 path for the first time. Typecheck/lint/build clean; smoke-tested against the Docker stack.
 - 2026-07-07 — Implemented the Auth module fully (JwtStrategy, JwtAuthGuard, AuthService, AuthController, DTOs) and wired it end-to-end. Typecheck, lint, and `nest build` all pass. While rebuilding the Docker image to smoke-test, found and fixed a real bug introduced by the earlier husky fix: `apps/api/Dockerfile`'s `deps` stage used `--ignore-scripts`, which also skipped `bcrypt`'s native-binding build script — the `runner` image (which copies `node_modules` from `deps`) then crashed at boot with `MODULE_NOT_FOUND` for `bcrypt_lib.node` as soon as `AuthService` (the first real consumer of `bcrypt`) was added. Fixed by narrowing the fix to `npm pkg delete scripts.prepare && npm ci --omit=dev` (drops only the broken husky hook, leaves bcrypt's own install script intact). Verified against the running Compose stack: register/login/me/logout all behave correctly, RBAC field-stripping on register confirmed, cookie flags confirmed.
