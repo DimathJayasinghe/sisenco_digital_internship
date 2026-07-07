@@ -23,7 +23,7 @@ COPY package.json package-lock.json ./
 COPY apps/api/package.json apps/api/
 COPY apps/web/package.json apps/web/
 COPY packages/shared-types/package.json packages/shared-types/
-RUN npm ci --omit=dev
+RUN npm ci --omit=dev --ignore-scripts
 
 # ─────────────────────────────────────────────────────────────
 # builder — full install, then build shared-types + generate the
