@@ -26,11 +26,14 @@ and seed already written, Docker Compose stack builds successfully. Feature modu
 - [x] Strict throttling on `/auth/login` and `/auth/register` (10 req/60s, via `@Throttle({ default: { limit: 10, ttl: 60_000 } })`)
 - [x] Smoke-tested end-to-end against the Dockerized stack: register (always TEAM_MEMBER, client `role` field rejected by `forbidNonWhitelisted`), duplicate-email 409, wrong-password generic 401, `/me` with/without cookie, logout clears cookie. Cookie flags confirmed: `HttpOnly; Secure; SameSite=Strict; Max-Age=604800`.
 
-### 1.2 Users Module
+### 1.2 Users Module — DONE (`feat/api-users-module`)
 
-- [ ] `UsersService` (findAll, findOne, updateRole — excludes `passwordHash` from all responses)
-- [ ] `UpdateUserDto`
-- [ ] `UsersController` — `GET /users`, `GET /users/:id`, `PATCH /users/:id` (all Manager-only)
+- [x] `UsersService` (findAll, findOne, update incl. role reassignment — excludes `passwordHash` via shared `toSafeUser` mapper)
+- [x] `UpdateUserDto` (firstName/lastName/role, all optional)
+- [x] `UsersController` — `GET /users`, `GET /users/:id`, `PATCH /users/:id` (all Manager-only via `@Roles(Role.MANAGER)`)
+- [x] Extracted `toSafeUser`/`UserWithRole` out of `AuthService` into `common/mappers/user.mapper.ts` (was about to be duplicated — DRY)
+- [x] `ParseUUIDPipe` on `:id` params for clean 400s on malformed ids
+- [x] Smoke-tested: manager can list/get/patch, team member gets 403, unauthenticated gets 401, bad UUID gets 400, missing user gets 404, role promotion via PATCH confirmed end-to-end (RolesGuard exercised for the first time)
 
 ### 1.3 Projects Module
 
@@ -66,9 +69,10 @@ and seed already written, Docker Compose stack builds successfully. Feature modu
 
 ## Open Questions
 
-_(none currently — add here per `AGENT_RULES.md §1` whenever a requirement is ambiguous)_
+- **Last-manager demotion:** `PATCH /users/:id` currently lets a Manager demote any user, including themself or the last remaining `MANAGER`, with no floor check. Spec is silent on this. Left as-is (no invented guard) — flag if this should be blocked before Manager routes proliferate further.
 
 ## Log
 
 - 2026-07-07 — Read all `AGENTS/*.md` docs. Confirmed existing scaffold: Prisma schema, seed script, common guards/decorators/filters/interceptors, and `shared-types` enums/interfaces are already implemented. Feature modules are empty stubs. Starting Phase 1 with the Auth module (`feat/api-auth-module`), since every other module depends on its guards/decorators.
+- 2026-07-07 — Implemented the Users module (`feat/api-users-module`, branched from `feat/api-auth-module`): list/get/patch, all Manager-only. Refactored the user-safe-mapping logic out of `AuthService` into `common/mappers` to avoid duplicating it. Verified RolesGuard's 403 path for the first time. Typecheck/lint/build clean; smoke-tested against the Docker stack.
 - 2026-07-07 — Implemented the Auth module fully (JwtStrategy, JwtAuthGuard, AuthService, AuthController, DTOs) and wired it end-to-end. Typecheck, lint, and `nest build` all pass. While rebuilding the Docker image to smoke-test, found and fixed a real bug introduced by the earlier husky fix: `apps/api/Dockerfile`'s `deps` stage used `--ignore-scripts`, which also skipped `bcrypt`'s native-binding build script — the `runner` image (which copies `node_modules` from `deps`) then crashed at boot with `MODULE_NOT_FOUND` for `bcrypt_lib.node` as soon as `AuthService` (the first real consumer of `bcrypt`) was added. Fixed by narrowing the fix to `npm pkg delete scripts.prepare && npm ci --omit=dev` (drops only the broken husky hook, leaves bcrypt's own install script intact). Verified against the running Compose stack: register/login/me/logout all behave correctly, RBAC field-stripping on register confirmed, cookie flags confirmed.
