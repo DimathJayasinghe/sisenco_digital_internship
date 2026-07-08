@@ -71,9 +71,9 @@ and seed already written, Docker Compose stack builds successfully. Feature modu
 
 ### 1.6 Cross-cutting
 
-- [ ] Confirm `ValidationPipe`, `AllExceptionsFilter`, `TransformResponseInterceptor` apply cleanly end-to-end once real endpoints exist
-- [ ] `.env.example` kept in sync with any new env vars
-- [ ] Manual smoke test of each endpoint (curl/Postman) before moving to frontend phase
+- [x] Confirm `ValidationPipe`, `AllExceptionsFilter`, `TransformResponseInterceptor` apply cleanly end-to-end once real endpoints exist — confirmed continuously across every module's manual smoke tests and now the automated e2e suite
+- [x] `.env.example` kept in sync with any new env vars — no new env vars introduced since scaffold
+- [x] Automated smoke test of every endpoint — `e2e/backend-smoke-test.sh` (113 assertions across all 6 modules, black-box over HTTP against the Dockerized stack). See `e2e/README.md`. Passed clean twice (113/113 both times); one run in between deliberately confirmed the auth rate-limiter trips correctly on rapid back-to-back runs (documented in the README, not a bug).
 
 ## Phase 2 — Frontend (Next.js)
 
@@ -89,6 +89,7 @@ and seed already written, Docker Compose stack builds successfully. Feature modu
 
 ## Log
 
+- 2026-07-08 — Built `e2e/backend-smoke-test.sh`: a self-contained, safely-re-runnable, black-box HTTP test suite covering all 6 backend modules (113 assertions — auth, users, projects+assignment, reports incl. Monday validation/submit derivation/assignment restriction, dashboard with delta-based assertions). Bash+curl+python3 only, no new dependencies. Ran it three times to validate: clean pass (113/113), an immediate re-run that failed exactly as expected on the auth rate limiter (confirming the throttle works end-to-end, not a bug), then a clean pass again ~65s later. This is the gate for promoting `dev` → `main`.
 - 2026-07-08 — Wired project-assignment enforcement into `ReportsService` (`feat/api-reports-enforce-project-assignment`, off `dev`), resolving the open question logged when the assignment endpoints landed. Typecheck/lint/build clean; smoke-tested both branches (restricted member blocked from an unassigned project; unrestricted member unaffected) against fresh test data.
 - 2026-07-08 — Implemented the previously-deferred project member-assignment endpoints (`feat/api-project-members`, off `dev`): `POST`/`DELETE /projects/:id/members`. Added `ProjectMember` to `shared-types` (had never been defined). Scoped to pure CRUD on `user_projects` — did not wire enforcement into `ReportsService`, since the spec doesn't mandate it and the feature itself is optional; logged as an open question instead of assuming either way. Typecheck/lint/build clean; smoke-tested full assign/unassign lifecycle plus all boundary/conflict cases.
 - 2026-07-08 — Implemented the Dashboard module (`feat/api-dashboard-module`, off `dev`): summary metrics, trend/status/workload charts, activity feed — all Manager-only. Confirmed the open-blockers heuristic and workload/trend windowing choices are reasonable defaults rather than spec-mandated, since `blockers` has no structured "resolved" flag. Typecheck/lint/build clean; smoke-tested against a hand-built dataset with every number verified by hand.
