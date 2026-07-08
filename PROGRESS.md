@@ -77,7 +77,14 @@ and seed already written, Docker Compose stack builds successfully. Feature modu
 
 ## Phase 2 — Frontend (Next.js)
 
-- [ ] Not started — deferred until Phase 1 is functionally complete
+Tracked in-session as tasks #1-8 (design system → auth → layout → member report page → manager dashboard → reports table → projects/members → polish pass). Each still lands as its own branch/PR into `dev`, same as Phase 1.
+
+### 2.1 Design System Foundation — DONE (`feat/web-design-system`)
+
+- [x] `tailwind.config.ts` / `globals.css` rewritten to drop the old light-mode CSS-variable token layer — components use Tailwind's stock `zinc`/`violet`/`emerald`/`red`/`amber` classes directly per `AGENTS/UI_UX_DESIGN.md`
+- [x] `components/ui/`: `Button` (primary/secondary/ghost/danger, hover-darkens per the verified contrast rule), `Input`, `Textarea` (both label+error built in, auto `useId()`), `Card`, `Badge` (typed directly off `ReportStatus | MemberSubmissionStatus` from `shared-types`, no lowercase-string translation layer)
+- [x] Patched the placeholder stub pages (`/`, `/login`, `/register`, `/dashboard`, `/reports`) off the now-deleted old token classes so the app isn't visually broken mid-build
+- [x] Verified in an actual browser, not just typecheck/lint: installed Playwright + Chromium in a scratch dir (not a project dependency), ran the dev server, screenshotted `/` and `/login` — glass card border/fill and violet button render exactly as specified
 
 ## Phase 3 — AI Chat Assistant (Bonus)
 
@@ -89,6 +96,7 @@ and seed already written, Docker Compose stack builds successfully. Feature modu
 
 ## Log
 
+- 2026-07-08 — Started Phase 2 (frontend). Set up an 8-task tracker for the phase. Built the design-system foundation (`feat/web-design-system`, off `dev`): Tailwind config + globals.css rewritten for the new dark system, core `components/ui/` primitives (Button/Input/Textarea/Card/Badge), stub pages patched off the deleted old tokens. Verified in an actual headless browser (Playwright/Chromium installed to a scratch dir, not a project dependency) rather than trusting typecheck alone. Explicitly re-confirmed applying `CODING_STANDARDS.md` §5/§6 (stateless prop-driven primitives, prop-spreading, `cn()` for conditional classes, Tailwind-only styling) — backend-specific instructions elsewhere in `AGENTS/` don't apply to this phase.
 - 2026-07-08 — Rewrote `AGENTS/UI_UX_DESIGN.md` from scratch: replaced the old light-mode "modern minimalism" system with a dark-mode zinc/violet/glass-border system (user's direction — zinc-950/900 canvas, `bg-white/5 border-white/10` glass cards instead of shadows, violet-600 primary accent, Inter with tabular-nums for stat numbers). Explicitly scoped as dark-mode only (flagged, not silently assumed). Verified every text/background color pair against the actual WCAG 2.1 contrast formula via a python script rather than eyeballing — this caught a real issue (white-on-violet-500 hover state fails AA body-text contrast at 4.2:1) and fixed it by darkening on hover (violet-600→700, 7.1:1) instead of the more intuitive lighten-on-hover. Also found zinc-500/600 unsafe for real text, restricted to placeholder/decorative use. Added explicit Team-Member-vs-Manager density differentiation (§6) per the user's brief: spacious/centered for the report form, dense/data-grid for the dashboard.
 - 2026-07-08 — Updated the branch policy: branches (topic branches and `dev`) are no longer deleted after merge — kept as a record of the work. Updated `AGENTS/GIT_WORKFLOW.md` (branching rules, PR process, keeping-branches-current note, quick reference) and `CLAUDE.md`'s summary accordingly. Everything merged before this point (PRs #1-13) still had its branch deleted per the old policy; this only applies going forward.
 - 2026-07-08 — Built `e2e/backend-smoke-test.sh`: a self-contained, safely-re-runnable, black-box HTTP test suite covering all 6 backend modules (113 assertions — auth, users, projects+assignment, reports incl. Monday validation/submit derivation/assignment restriction, dashboard with delta-based assertions). Bash+curl+python3 only, no new dependencies. Ran it three times to validate: clean pass (113/113), an immediate re-run that failed exactly as expected on the auth rate limiter (confirming the throttle works end-to-end, not a bug), then a clean pass again ~65s later. This is the gate for promoting `dev` → `main`.

@@ -2,33 +2,9 @@
 @tailwind components;
 @tailwind utilities;
 
-/* Design tokens — see AGENTS/UI_UX_DESIGN.md §3. Reference via Tailwind theme
-   tokens (bg-bg-primary, text-text-muted, bg-accent, ...), never raw hex. */
-:root {
-  --color-bg-primary: #ffffff;
-  --color-bg-secondary: #f9fafb;
-  --color-bg-subtle: #f3f4f6;
-  --color-border: #e5e7eb;
-
-  --color-text-primary: #111827;
-  --color-text-secondary: #374151;
-  --color-text-muted: #6b7280;
-
-  --color-accent: #4f46e5;
-  --color-accent-hover: #4338ca;
-  --color-accent-light: #eef2ff;
-
-  --color-success-bg: #d1fae5;
-  --color-success-fg: #065f46;
-  --color-warning-bg: #fef3c7;
-  --color-warning-fg: #92400e;
-  --color-error-bg: #fee2e2;
-  --color-error-fg: #991b1b;
-  --color-neutral-bg: #f3f4f6;
-  --color-neutral-fg: #374151;
-}
-
+/* Dark-mode-only system — AGENTS/UI_UX_DESIGN.md. No CSS custom-property
+   token layer: components use Tailwind's stock zinc/violet/emerald/red/amber
+   classes directly (bg-zinc-950, text-violet-400, ...). */
 body {
-  background-color: var(--color-bg-primary);
-  color: var(--color-text-primary);
+  @apply bg-zinc-950 text-zinc-100 antialiased;
 }
