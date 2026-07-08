@@ -79,12 +79,15 @@ services:
       context: .
       dockerfile: apps/web/Dockerfile
       target: runner
+      # Proxy target baked into .next/routes-manifest.json at `next build`
+      # time — must be a build arg, not a runtime `environment:` entry (that
+      # has no effect on it; see apps/web/Dockerfile).
+      args:
+        API_URL: http://api:3001
     restart: unless-stopped
     environment:
       NODE_ENV: production
       PORT: 3000
-      # Server-side proxy target — the api service on the compose network.
-      API_URL: http://api:3001
     ports:
       - "${WEB_PORT:-3000}:3000"
     depends_on:
