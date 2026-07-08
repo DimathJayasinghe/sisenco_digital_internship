@@ -35,32 +35,45 @@ and seed already written, Docker Compose stack builds successfully. Feature modu
 - [x] `ParseUUIDPipe` on `:id` params for clean 400s on malformed ids
 - [x] Smoke-tested: manager can list/get/patch, team member gets 403, unauthenticated gets 401, bad UUID gets 400, missing user gets 404, role promotion via PATCH confirmed end-to-end (RolesGuard exercised for the first time)
 
-### 1.3 Projects Module — CORE DONE (`feat/api-projects-module`); member assignment deferred
+### 1.3 Projects Module — DONE, including member assignment (`feat/api-projects-module`, `feat/api-project-members`)
 
 - [x] `CreateProjectDto` / `UpdateProjectDto`
 - [x] `ProjectsService` (CRUD + soft-delete via `is_active`, unique-name conflict check on create/rename)
 - [x] `ProjectsController` — `GET /projects` (any authenticated user), `POST` / `PATCH /:id` / `DELETE /:id` (Manager-only)
 - [x] `toProjectDto` mapper added alongside `toSafeUser` in `common/mappers`
 - [x] Smoke-tested: unauthenticated 401, team member can list but not write (403), manager full CRUD, duplicate-name 409, soft-delete removes from the active list (`GET /projects` only returns `isActive: true`), 404 on missing id, `forbidNonWhitelisted` rejects a client-supplied `isActive`
-- [ ] **Deferred:** `POST/DELETE /projects/:id/members` (optional per `ARCHITECTURE.md`/`PROJECT_IDEA.md` §4.4 — "optional feature"). `UserProject` model already exists in the Prisma schema; not yet exposed via API. Revisit after Reports/Dashboard if time allows.
+- [x] `POST /projects/:id/members` / `DELETE /projects/:id/members/:userId` (Manager-only) — added `ProjectMember` to `shared-types` (not previously defined), `AssignMemberDto`, `toProjectMemberDto` mapper. Validates both the project and the user exist (project 404, user 404), rejects a duplicate assignment with 409, unassigning a non-assignment is a 404.
+- [x] **Enforcement (added `feat/api-reports-enforce-project-assignment`):** `ReportsService.assertProjectAccessible()` now enforces `DATABASE.md §3`'s stated purpose for `user_projects` — if a member has _any_ assignments at all, `projectId` on create/update must be one of them (403 `"You are not assigned to this project"` otherwise); a member with zero assignments stays unrestricted (assignment is opt-in per project, not mandatory team-wide). Smoke-tested both branches: an assigned-and-restricted member blocked from an unassigned project, and an unrestricted member (no assignments) unaffected.
+- [x] Smoke-tested: 403/401 boundaries, successful assign (returns the `ProjectMember` with embedded `user`), duplicate-assignment 409, assign-nonexistent-user 404, assign-to-nonexistent-project 404, successful unassign (`{success:true}`), unassign-again 404, malformed UUID 400, `forbidNonWhitelisted` rejects extra fields
 
-### 1.4 Reports Module
+### 1.4 Reports Module — DONE (`feat/api-reports-module`)
 
-- [ ] `CreateReportDto` / `UpdateReportDto` (fixed fields only, per `DATABASE.md`)
-- [ ] `ReportsService` — create (DRAFT), update (DRAFT only, ownership via JWT `userId`), submit (DRAFT→SUBMITTED/LATE via deadline comparison), findMine, findOne (owner or manager), findAll (manager, with filters: member/project/date range)
-- [ ] `ReportsController` — wire endpoints from `ARCHITECTURE.md §3`
-- [ ] Enforce `UNIQUE(user_id, week_start_date)` conflict → clean 409/400 response
+- [x] `CreateReportDto` / `UpdateReportDto` (fixed fields only, per `DATABASE.md`). **Design decision (user-confirmed):** client sends only `weekStartDate`; the server always derives `weekEndDate = weekStartDate + 6 days` (fixed 7-day week), so every member's weeks align to the same boundaries for dashboard aggregation.
+- [x] `FindReportsQueryDto` — Manager filters: `userId`, `projectId`, `startDate`/`endDate` range on `weekStartDate`
+- [x] `ReportsService` — create (DRAFT, validates project is active per `SECURITY_GUIDELINES.md §6`), update (DRAFT-only, owner-only — not Manager, per `ARCHITECTURE.md`'s "Owner (DRAFT only)"), submit (DRAFT→SUBMITTED/LATE via `DATABASE.md §5`'s deadline formula: `now() > week_end_date + SUBMISSION_GRACE_DAYS` ⇒ LATE), findMine, findOne (owner or Manager), findAll (Manager, with filters)
+- [x] `ReportsController` — all six endpoints from `ARCHITECTURE.md §3`; route order matters (`GET /reports/my` declared before `GET /reports/:id}` so Express doesn't swallow it as an id param)
+- [x] `UNIQUE(user_id, week_start_date)` conflict → clean 409, both on create and on changing `weekStartDate` via PATCH (excludes self)
+- [x] `common/mappers/report.mapper.ts` — `toReportWithRelationsDto` embeds `project` + `user` summary (matches shared-types' `ReportWithRelations`); handles the Prisma `ReportStatus` enum → shared-types enum cast (same pattern as `Role` in `user.mapper.ts`) and `Decimal` → `number` for `hoursWorked`
+- [x] Smoke-tested extensively against the Dockerized stack: unauthenticated 401, Manager forbidden from creating/submitting (TEAM_MEMBER-only), team member forbidden from `GET /reports` (Manager-only), cross-member read denied (403), Manager can read any report but _cannot_ PATCH another member's report (PATCH is owner-only, not Manager), duplicate-week 409, inactive/nonexistent `projectId` 400, `forbidNonWhitelisted` rejects a client-supplied `status`, DRAFT→LATE for a past-deadline week vs DRAFT→SUBMITTED for the current week (verified both branches of the deadline logic with real dates), re-submit 409, PATCH-after-submit 403, all four Manager query filters (`userId`, date range, invalid UUID → 400, unfiltered)
 
-### 1.5 Dashboard Module
+### 1.5 Dashboard Module — DONE (`feat/api-dashboard-module`)
 
-- [ ] `DashboardService` — summary (total/compliance/open blockers per `DATABASE.md §5` formula), trend, status-by-member, workload-by-project, activity feed
-- [ ] `DashboardController` — all Manager-only
+- [x] `getCurrentWeekStart()` — canonical "current week" = most recent Monday on/before now, UTC. Only well-defined because reports are now required to start on a Monday (see `fix/reports-monday-week-start`).
+- [x] `DashboardService.getSummary()` — `DATABASE.md §5`'s compliance formula exactly: `expectedMembers` = count of `TEAM_MEMBER` users, `submittedMembers`/`totalSubmittedThisWeek` = count of SUBMITTED+LATE reports for the current week (same number, since `UNIQUE(user_id, week_start_date)` means 1 report = 1 member), `pendingMembers = expected - submitted`, `complianceRate = submitted / expected` (0 when expected is 0)
+- [x] `getSummary()`'s `openBlockers` — **heuristic, flagged as such:** `blockers` is required free text (no boolean "is this open" column exists), so a report counts as having an open blocker unless its trimmed/lowercased text is in a small set (`none`, `n/a`, `na`, `no blockers`, `nothing`, `-`). Windowed to the current week, SUBMITTED+LATE only. Documented in `dashboard.constants.ts`.
+- [x] `getTrend()` — submitted/late report count grouped by `weekStartDate`, all weeks on record (no artificial cutoff)
+- [x] `getStatusByMember()` — every `TEAM_MEMBER`, current week; DRAFT or no report both read as `PENDING` per `DATABASE.md §5`
+- [x] `getWorkloadByProject()` — report count + summed hours per project, SUBMITTED+LATE only
+- [x] `getActivityFeed()` — most recent 20 SUBMITTED/LATE reports, newest `submittedAt` first
+- [x] `DashboardController` — all five endpoints, all Manager-only (`@Roles(Role.MANAGER)` at class level)
+- [x] Small refactor while here: extracted `REPORT_RELATIONS` (was private to `ReportsService`) to `common/prisma/report-includes.ts`, and `toIsoDate` (was private to `report.mapper.ts`) to `common/utils/date.util.ts` — both now shared between Reports and Dashboard instead of about to be duplicated
+- [x] Smoke-tested against the Dockerized stack with a hand-verified dataset (3 team members, 3 reports across 2 weeks, one real blocker each, one member with no current-week report): every number checked out exactly — compliance `2/3`, `pendingMembers: 1`, status chart showing `SUBMITTED`/`SUBMITTED`/`PENDING`, trend across both weeks, workload totalHours summing correctly (38.5 + 40 + 20 = 98.5), activity feed ordered newest-first. Plus 401/403 boundary checks.
 
 ### 1.6 Cross-cutting
 
-- [ ] Confirm `ValidationPipe`, `AllExceptionsFilter`, `TransformResponseInterceptor` apply cleanly end-to-end once real endpoints exist
-- [ ] `.env.example` kept in sync with any new env vars
-- [ ] Manual smoke test of each endpoint (curl/Postman) before moving to frontend phase
+- [x] Confirm `ValidationPipe`, `AllExceptionsFilter`, `TransformResponseInterceptor` apply cleanly end-to-end once real endpoints exist — confirmed continuously across every module's manual smoke tests and now the automated e2e suite
+- [x] `.env.example` kept in sync with any new env vars — no new env vars introduced since scaffold
+- [x] Automated smoke test of every endpoint — `e2e/backend-smoke-test.sh` (113 assertions across all 6 modules, black-box over HTTP against the Dockerized stack). See `e2e/README.md`. Passed clean twice (113/113 both times); one run in between deliberately confirmed the auth rate-limiter trips correctly on rapid back-to-back runs (documented in the README, not a bug).
 
 ## Phase 2 — Frontend (Next.js)
 
@@ -76,6 +89,13 @@ and seed already written, Docker Compose stack builds successfully. Feature modu
 
 ## Log
 
+- 2026-07-08 — Built `e2e/backend-smoke-test.sh`: a self-contained, safely-re-runnable, black-box HTTP test suite covering all 6 backend modules (113 assertions — auth, users, projects+assignment, reports incl. Monday validation/submit derivation/assignment restriction, dashboard with delta-based assertions). Bash+curl+python3 only, no new dependencies. Ran it three times to validate: clean pass (113/113), an immediate re-run that failed exactly as expected on the auth rate limiter (confirming the throttle works end-to-end, not a bug), then a clean pass again ~65s later. This is the gate for promoting `dev` → `main`.
+- 2026-07-08 — Wired project-assignment enforcement into `ReportsService` (`feat/api-reports-enforce-project-assignment`, off `dev`), resolving the open question logged when the assignment endpoints landed. Typecheck/lint/build clean; smoke-tested both branches (restricted member blocked from an unassigned project; unrestricted member unaffected) against fresh test data.
+- 2026-07-08 — Implemented the previously-deferred project member-assignment endpoints (`feat/api-project-members`, off `dev`): `POST`/`DELETE /projects/:id/members`. Added `ProjectMember` to `shared-types` (had never been defined). Scoped to pure CRUD on `user_projects` — did not wire enforcement into `ReportsService`, since the spec doesn't mandate it and the feature itself is optional; logged as an open question instead of assuming either way. Typecheck/lint/build clean; smoke-tested full assign/unassign lifecycle plus all boundary/conflict cases.
+- 2026-07-08 — Implemented the Dashboard module (`feat/api-dashboard-module`, off `dev`): summary metrics, trend/status/workload charts, activity feed — all Manager-only. Confirmed the open-blockers heuristic and workload/trend windowing choices are reasonable defaults rather than spec-mandated, since `blockers` has no structured "resolved" flag. Typecheck/lint/build clean; smoke-tested against a hand-built dataset with every number verified by hand.
+- 2026-07-08 — Added an `@IsMonday()` validator to `CreateReportDto`/`UpdateReportDto.weekStartDate` (`fix/reports-monday-week-start`, off `dev`). Follow-up fix to the already-merged Reports module: confirmed with the user that report weeks must align to a consistent day-of-week (Monday) team-wide, since the upcoming Dashboard module's "current week" compliance metric needs one canonical week boundary to count every member against — an unconstrained `weekStartDate` would let members' weeks drift out of alignment with that boundary. `weekEndDate` (already server-derived as +6 days) is now always the following Sunday.
+- 2026-07-08 — Implemented the Reports module (`feat/api-reports-module`, branched from `dev` — first module to use the new two-branch workflow): create/findMine/findAll/findOne/update/submit, per `ARCHITECTURE.md §3` and `DATABASE.md §5`'s status/compliance semantics. Confirmed with the user that `weekEndDate` is always server-derived from `weekStartDate` (+6 days), not client-supplied, so weeks stay aligned across the team for dashboard aggregation. Typecheck/lint/build clean; extensively smoke-tested against the Docker stack, including both branches of the DRAFT→SUBMITTED/LATE deadline logic with real dates.
+- 2026-07-07 — Switched to a two-branch workflow: `main` (production-ready, only updated via `dev` promotion) + `dev` (integration branch, branched from `main`). All topic branches now branch from `dev` and PR into `dev` (squash-merge); `dev` → `main` is promoted periodically via PR with a regular merge commit (not squash), once a stable slice of work is verified. Updated `AGENTS/GIT_WORKFLOW.md` and `CLAUDE.md` accordingly. Created `dev` from `main` at `7626836` (tip after the projects-module merge).
 - 2026-07-07 — Read all `AGENTS/*.md` docs. Confirmed existing scaffold: Prisma schema, seed script, common guards/decorators/filters/interceptors, and `shared-types` enums/interfaces are already implemented. Feature modules are empty stubs. Starting Phase 1 with the Auth module (`feat/api-auth-module`), since every other module depends on its guards/decorators.
 - 2026-07-07 — Implemented the Projects module core (`feat/api-projects-module`, branched from `feat/api-users-module`): list/create/update/soft-delete, list open to any authenticated user, writes Manager-only. Deferred the optional member-assignment endpoints. Typecheck/lint/build clean; smoke-tested against the Docker stack including soft-delete filtering and unique-name conflicts.
 - 2026-07-07 — Implemented the Users module (`feat/api-users-module`, branched from `feat/api-auth-module`): list/get/patch, all Manager-only. Refactored the user-safe-mapping logic out of `AuthService` into `common/mappers` to avoid duplicating it. Verified RolesGuard's 403 path for the first time. Typecheck/lint/build clean; smoke-tested against the Docker stack.
