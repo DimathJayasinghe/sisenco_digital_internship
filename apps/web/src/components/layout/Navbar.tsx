@@ -32,10 +32,14 @@ export function Navbar(): ReactNode {
 
   return (
     <header className="border-b border-white/10 bg-zinc-950">
-      <div className="mx-auto flex h-16 max-w-2xl items-center justify-between px-6">
-        <div className="flex items-center gap-6">
-          <Link href="/reports" className="text-sm font-semibold tracking-tight text-zinc-100">
-            Weekly Reports
+      <div className="mx-auto flex h-16 max-w-2xl items-center justify-between gap-2 px-4 sm:px-6">
+        <div className="flex items-center gap-3 sm:gap-6">
+          <Link
+            href="/reports"
+            className="whitespace-nowrap text-sm font-semibold tracking-tight text-zinc-100"
+          >
+            <span className="sm:hidden">WR</span>
+            <span className="hidden sm:inline">Weekly Reports</span>
           </Link>
           <nav className="flex items-center gap-1">
             {NAV_LINKS.map((link) => {
@@ -45,7 +49,7 @@ export function Navbar(): ReactNode {
                   key={link.href}
                   href={link.href}
                   className={cn(
-                    'rounded-lg px-3 py-1.5 text-sm font-medium transition-colors',
+                    'whitespace-nowrap rounded-lg px-2 py-1.5 text-sm font-medium transition-colors sm:px-3',
                     isActive
                       ? 'bg-violet-500/10 text-violet-400'
                       : 'text-zinc-400 hover:bg-white/5 hover:text-zinc-100',
@@ -57,13 +61,18 @@ export function Navbar(): ReactNode {
             })}
           </nav>
         </div>
-        <div className="flex items-center gap-4">
+        <div className="flex items-center gap-2 sm:gap-4">
           {user && (
             <span className="hidden text-sm text-zinc-400 sm:inline">
               {user.firstName} {user.lastName}
             </span>
           )}
-          <Button variant="ghost" onClick={handleLogout} disabled={logout.isPending}>
+          <Button
+            variant="ghost"
+            className="whitespace-nowrap px-2 sm:px-4"
+            onClick={handleLogout}
+            disabled={logout.isPending}
+          >
             Sign out
           </Button>
         </div>

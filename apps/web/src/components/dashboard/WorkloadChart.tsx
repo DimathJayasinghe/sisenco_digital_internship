@@ -21,7 +21,13 @@ export function WorkloadChart({ data }: WorkloadChartProps): ReactNode {
   return (
     <Card className="p-4">
       <p className="text-sm font-semibold text-zinc-100">Workload by Project</p>
-      <div className="mt-4 h-64">
+      <div
+        role="img"
+        aria-label={`Bar chart of report count by project: ${data
+          .map((slice) => `${slice.projectName}, ${slice.reportCount}`)
+          .join('; ')}`}
+        className="mt-4 h-64"
+      >
         <ResponsiveContainer width="100%" height="100%">
           <BarChart data={data} margin={{ left: -20 }}>
             <CartesianGrid stroke="#27272a" vertical={false} />

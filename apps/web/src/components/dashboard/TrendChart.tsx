@@ -35,7 +35,13 @@ export function TrendChart({ data }: TrendChartProps): ReactNode {
   return (
     <Card className="p-4">
       <p className="text-sm font-semibold text-zinc-100">Reports Submitted Over Time</p>
-      <div className="mt-4 h-64">
+      <div
+        role="img"
+        aria-label={`Line chart of reports submitted per week: ${chartData
+          .map((point) => `${point.week}, ${point.reports}`)
+          .join('; ')}`}
+        className="mt-4 h-64"
+      >
         <ResponsiveContainer width="100%" height="100%">
           <LineChart data={chartData} margin={{ left: -20 }}>
             <CartesianGrid stroke="#27272a" vertical={false} />

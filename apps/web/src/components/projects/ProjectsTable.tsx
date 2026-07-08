@@ -88,7 +88,8 @@ function ProjectRow({ project, users, isExpanded, onToggle }: ProjectRowProps): 
           <button
             type="button"
             onClick={onToggle}
-            aria-label={isExpanded ? 'Collapse' : 'Expand'}
+            aria-expanded={isExpanded}
+            aria-label={`${isExpanded ? 'Collapse' : 'Expand'} ${project.name}`}
             className="transition-colors hover:text-zinc-100"
           >
             {isExpanded ? <ChevronDown size={16} /> : <ChevronRight size={16} />}
@@ -110,6 +111,7 @@ function ProjectRow({ project, users, isExpanded, onToggle }: ProjectRowProps): 
             <Button
               type="button"
               variant="ghost"
+              aria-label={`Edit ${project.name}`}
               onClick={() => {
                 setIsEditing((current) => !current);
                 if (!isExpanded) onToggle();
@@ -117,7 +119,12 @@ function ProjectRow({ project, users, isExpanded, onToggle }: ProjectRowProps): 
             >
               Edit
             </Button>
-            <Button type="button" variant="ghost" onClick={handleDelete}>
+            <Button
+              type="button"
+              variant="ghost"
+              aria-label={`Delete ${project.name}`}
+              onClick={handleDelete}
+            >
               Delete
             </Button>
           </div>
