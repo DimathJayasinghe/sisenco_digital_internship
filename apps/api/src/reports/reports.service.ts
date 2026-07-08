@@ -8,13 +8,12 @@ import {
 import { Prisma, Report as PrismaReport, ReportStatus as PrismaReportStatus } from '@prisma/client';
 import { AuthUser, ReportWithRelations, Role } from '@sisenco/shared-types';
 import { toReportWithRelationsDto } from '../common/mappers';
+import { REPORT_RELATIONS } from '../common/prisma/report-includes';
 import { PrismaService } from '../common/prisma/prisma.service';
 import { CreateReportDto } from './dto/create-report.dto';
 import { FindReportsQueryDto } from './dto/find-reports-query.dto';
 import { UpdateReportDto } from './dto/update-report.dto';
 import { computeWeekEndDate, isPastDeadline } from './utils/week.util';
-
-const REPORT_RELATIONS = { project: true, user: true } as const;
 
 @Injectable()
 export class ReportsService {

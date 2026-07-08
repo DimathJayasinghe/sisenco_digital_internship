@@ -1,8 +1,12 @@
 import { Module } from '@nestjs/common';
+import { DashboardController } from './dashboard.controller';
+import { DashboardService } from './dashboard.service';
 
 /**
  * DashboardModule — Manager aggregation queries: summary metrics and chart data.
- * Implemented in the backend phase.
  */
-@Module({})
+@Module({
+  controllers: [DashboardController],
+  providers: [DashboardService],
+})
 export class DashboardModule {}

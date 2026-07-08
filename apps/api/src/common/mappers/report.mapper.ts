@@ -1,14 +1,11 @@
 import { Prisma } from '@prisma/client';
 import { Report, ReportStatus, ReportWithRelations } from '@sisenco/shared-types';
+import { toIsoDate } from '../utils/date.util';
 import { toProjectDto } from './project.mapper';
 
 type ReportWithRelationsPrisma = Prisma.ReportGetPayload<{
   include: { project: true; user: true };
 }>;
-
-function toIsoDate(date: Date): string {
-  return date.toISOString().slice(0, 10);
-}
 
 function toReportDto(report: Prisma.ReportGetPayload<object>): Report {
   return {
