@@ -45,6 +45,12 @@ export class ProjectsController {
   }
 
   @Roles(Role.MANAGER)
+  @Get(':id/members')
+  findMembers(@Param('id', ParseUUIDPipe) id: string): Promise<ProjectMember[]> {
+    return this.projectsService.findMembers(id);
+  }
+
+  @Roles(Role.MANAGER)
   @Post(':id/members')
   assignMember(
     @Param('id', ParseUUIDPipe) id: string,
