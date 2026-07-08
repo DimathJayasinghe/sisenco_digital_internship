@@ -15,11 +15,13 @@ import {
   MAX_REPORT_TEXT_LENGTH,
   MIN_HOURS_WORKED,
 } from '../reports.constants';
+import { IsMonday } from '../validators/is-monday.validator';
 
 /** Only ever applied to a DRAFT report owned by the caller (enforced in ReportsService). */
 export class UpdateReportDto {
   @IsOptional()
   @IsDateString()
+  @IsMonday()
   readonly weekStartDate?: string;
 
   @IsOptional()

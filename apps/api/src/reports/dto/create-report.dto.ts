@@ -15,10 +15,12 @@ import {
   MAX_REPORT_TEXT_LENGTH,
   MIN_HOURS_WORKED,
 } from '../reports.constants';
+import { IsMonday } from '../validators/is-monday.validator';
 
 export class CreateReportDto {
-  /** Start of the reporting week (e.g. a Monday). weekEndDate is always derived as +6 days. */
+  /** Must be a Monday — weekEndDate is always derived as +6 days (the following Sunday). */
   @IsDateString()
+  @IsMonday()
   readonly weekStartDate!: string;
 
   @IsUUID()
