@@ -3,6 +3,7 @@
 import type { ReactNode } from 'react';
 import { ActivityFeed } from '@/components/dashboard/ActivityFeed';
 import { MetricCard } from '@/components/dashboard/MetricCard';
+import { ReportsTable } from '@/components/dashboard/ReportsTable';
 import { StatusList } from '@/components/dashboard/StatusList';
 import { TrendChart } from '@/components/dashboard/TrendChart';
 import { WorkloadChart } from '@/components/dashboard/WorkloadChart';
@@ -13,6 +14,8 @@ import {
   useDashboardTrend,
   useDashboardWorkload,
 } from '@/hooks/useDashboard';
+import { useProjects } from '@/hooks/useProjects';
+import { useUsers } from '@/hooks/useUsers';
 
 const PERCENT_MULTIPLIER = 100;
 
@@ -26,21 +29,40 @@ export function DashboardView(): ReactNode {
   const status = useDashboardStatus();
   const workload = useDashboardWorkload();
   const activity = useDashboardActivity();
+  const users = useUsers();
+  const projects = useProjects();
 
   const isLoading =
     summary.isLoading ||
     trend.isLoading ||
     status.isLoading ||
     workload.isLoading ||
-    activity.isLoading;
+    activity.isLoading ||
+    users.isLoading ||
+    projects.isLoading;
   const isError =
-    summary.isError || trend.isError || status.isError || workload.isError || activity.isError;
+    summary.isError ||
+    trend.isError ||
+    status.isError ||
+    workload.isError ||
+    activity.isError ||
+    users.isError ||
+    projects.isError;
 
   if (isLoading) {
     return <p className="p-6 text-sm text-zinc-400">Loading dashboard…</p>;
   }
 
-  if (isError || !summary.data || !trend.data || !status.data || !workload.data || !activity.data) {
+  if (
+    isError ||
+    !summary.data ||
+    !trend.data ||
+    !status.data ||
+    !workload.data ||
+    !activity.data ||
+    !users.data ||
+    !projects.data
+  ) {
     return (
       <p className="p-6 text-sm text-red-400">Couldn&apos;t load the dashboard. Try refreshing.</p>
     );
@@ -78,6 +100,10 @@ export function DashboardView(): ReactNode {
       <div className="mt-6 grid grid-cols-1 gap-4 lg:grid-cols-2">
         <StatusList data={status.data} />
         <ActivityFeed data={activity.data} />
+      </div>
+
+      <div className="mt-6">
+        <ReportsTable users={users.data} projects={projects.data} />
       </div>
     </div>
   );
