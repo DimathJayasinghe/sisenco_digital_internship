@@ -35,14 +35,16 @@ and seed already written, Docker Compose stack builds successfully. Feature modu
 - [x] `ParseUUIDPipe` on `:id` params for clean 400s on malformed ids
 - [x] Smoke-tested: manager can list/get/patch, team member gets 403, unauthenticated gets 401, bad UUID gets 400, missing user gets 404, role promotion via PATCH confirmed end-to-end (RolesGuard exercised for the first time)
 
-### 1.3 Projects Module — CORE DONE (`feat/api-projects-module`); member assignment deferred
+### 1.3 Projects Module — DONE, including member assignment (`feat/api-projects-module`, `feat/api-project-members`)
 
 - [x] `CreateProjectDto` / `UpdateProjectDto`
 - [x] `ProjectsService` (CRUD + soft-delete via `is_active`, unique-name conflict check on create/rename)
 - [x] `ProjectsController` — `GET /projects` (any authenticated user), `POST` / `PATCH /:id` / `DELETE /:id` (Manager-only)
 - [x] `toProjectDto` mapper added alongside `toSafeUser` in `common/mappers`
 - [x] Smoke-tested: unauthenticated 401, team member can list but not write (403), manager full CRUD, duplicate-name 409, soft-delete removes from the active list (`GET /projects` only returns `isActive: true`), 404 on missing id, `forbidNonWhitelisted` rejects a client-supplied `isActive`
-- [ ] **Deferred:** `POST/DELETE /projects/:id/members` (optional per `ARCHITECTURE.md`/`PROJECT_IDEA.md` §4.4 — "optional feature"). `UserProject` model already exists in the Prisma schema; not yet exposed via API. Revisit after Reports/Dashboard if time allows.
+- [x] `POST /projects/:id/members` / `DELETE /projects/:id/members/:userId` (Manager-only) — added `ProjectMember` to `shared-types` (not previously defined), `AssignMemberDto`, `toProjectMemberDto` mapper. Validates both the project and the user exist (project 404, user 404), rejects a duplicate assignment with 409, unassigning a non-assignment is a 404.
+- [x] **Scope note:** implemented as pure CRUD on `user_projects` only. `DATABASE.md §3` describes this table's _purpose_ as "restricts which projects a member can report on," but does not mandate that restriction be enforced — and the feature itself is marked optional throughout the spec. `ReportsService.create`/`update` still accept any active project regardless of assignment, i.e. assignment is informational, not yet enforced. Flagged in Open Questions below in case enforcement is wanted later.
+- [x] Smoke-tested: 403/401 boundaries, successful assign (returns the `ProjectMember` with embedded `user`), duplicate-assignment 409, assign-nonexistent-user 404, assign-to-nonexistent-project 404, successful unassign (`{success:true}`), unassign-again 404, malformed UUID 400, `forbidNonWhitelisted` rejects extra fields
 
 ### 1.4 Reports Module — DONE (`feat/api-reports-module`)
 
@@ -84,9 +86,11 @@ and seed already written, Docker Compose stack builds successfully. Feature modu
 ## Open Questions
 
 - **Last-manager demotion:** `PATCH /users/:id` currently lets a Manager demote any user, including themself or the last remaining `MANAGER`, with no floor check. Spec is silent on this. Left as-is (no invented guard) — flag if this should be blocked before Manager routes proliferate further.
+- **Project-member assignment isn't enforced anywhere:** `user_projects` rows can be created/deleted via the API, but `ReportsService` doesn't check them — any active project is reportable by any team member regardless of assignment. Flag if reports should be restricted to a member's assigned projects (when they have any assignments at all).
 
 ## Log
 
+- 2026-07-08 — Implemented the previously-deferred project member-assignment endpoints (`feat/api-project-members`, off `dev`): `POST`/`DELETE /projects/:id/members`. Added `ProjectMember` to `shared-types` (had never been defined). Scoped to pure CRUD on `user_projects` — did not wire enforcement into `ReportsService`, since the spec doesn't mandate it and the feature itself is optional; logged as an open question instead of assuming either way. Typecheck/lint/build clean; smoke-tested full assign/unassign lifecycle plus all boundary/conflict cases.
 - 2026-07-08 — Implemented the Dashboard module (`feat/api-dashboard-module`, off `dev`): summary metrics, trend/status/workload charts, activity feed — all Manager-only. Confirmed the open-blockers heuristic and workload/trend windowing choices are reasonable defaults rather than spec-mandated, since `blockers` has no structured "resolved" flag. Typecheck/lint/build clean; smoke-tested against a hand-built dataset with every number verified by hand.
 - 2026-07-08 — Added an `@IsMonday()` validator to `CreateReportDto`/`UpdateReportDto.weekStartDate` (`fix/reports-monday-week-start`, off `dev`). Follow-up fix to the already-merged Reports module: confirmed with the user that report weeks must align to a consistent day-of-week (Monday) team-wide, since the upcoming Dashboard module's "current week" compliance metric needs one canonical week boundary to count every member against — an unconstrained `weekStartDate` would let members' weeks drift out of alignment with that boundary. `weekEndDate` (already server-derived as +6 days) is now always the following Sunday.
 - 2026-07-08 — Implemented the Reports module (`feat/api-reports-module`, branched from `dev` — first module to use the new two-branch workflow): create/findMine/findAll/findOne/update/submit, per `ARCHITECTURE.md §3` and `DATABASE.md §5`'s status/compliance semantics. Confirmed with the user that `weekEndDate` is always server-derived from `weekStartDate` (+6 days), not client-supplied, so weeks stay aligned across the team for dashboard aggregation. Typecheck/lint/build clean; extensively smoke-tested against the Docker stack, including both branches of the DRAFT→SUBMITTED/LATE deadline logic with real dates.

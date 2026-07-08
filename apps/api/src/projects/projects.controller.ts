@@ -1,6 +1,18 @@
-import { Body, Controller, Delete, Get, Param, ParseUUIDPipe, Patch, Post } from '@nestjs/common';
-import { Project, Role } from '@sisenco/shared-types';
+import {
+  Body,
+  Controller,
+  Delete,
+  Get,
+  HttpCode,
+  HttpStatus,
+  Param,
+  ParseUUIDPipe,
+  Patch,
+  Post,
+} from '@nestjs/common';
+import { Project, ProjectMember, Role } from '@sisenco/shared-types';
 import { Roles } from '../common/decorators';
+import { AssignMemberDto } from './dto/assign-member.dto';
 import { CreateProjectDto } from './dto/create-project.dto';
 import { UpdateProjectDto } from './dto/update-project.dto';
 import { ProjectsService } from './projects.service';
@@ -30,5 +42,25 @@ export class ProjectsController {
   @Delete(':id')
   remove(@Param('id', ParseUUIDPipe) id: string): Promise<Project> {
     return this.projectsService.softDelete(id);
+  }
+
+  @Roles(Role.MANAGER)
+  @Post(':id/members')
+  assignMember(
+    @Param('id', ParseUUIDPipe) id: string,
+    @Body() dto: AssignMemberDto,
+  ): Promise<ProjectMember> {
+    return this.projectsService.assignMember(id, dto);
+  }
+
+  @Roles(Role.MANAGER)
+  @HttpCode(HttpStatus.OK)
+  @Delete(':id/members/:userId')
+  async unassignMember(
+    @Param('id', ParseUUIDPipe) id: string,
+    @Param('userId', ParseUUIDPipe) userId: string,
+  ): Promise<{ success: true }> {
+    await this.projectsService.unassignMember(id, userId);
+    return { success: true };
   }
 }
