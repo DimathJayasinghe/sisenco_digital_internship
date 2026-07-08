@@ -58,7 +58,7 @@ Build in phases, strictly: **Backend → Frontend → AI (bonus)** (`AGENT_RULES
 
 ## Git workflow
 
-Two long-lived branches: `main` (production-ready, only updated by merging `dev` in) and `dev` (integration branch, branched from `main`). No direct commits to either. Every topic branch (`<type>/<summary>`, types match Conventional Commits) branches from the latest `dev`, PRs into `dev`, and squash-merges. Periodically, once `dev` is stable, PR `dev` into `main` with a regular merge commit (not squash). Commit messages are Conventional Commits: `type(scope): subject`. Full rules in `AGENTS/GIT_WORKFLOW.md`.
+Two long-lived branches: `main` (production-ready, only updated by merging `dev` in) and `dev` (integration branch, branched from `main`). No direct commits to either. Every topic branch (`<type>/<summary>`, types match Conventional Commits) branches from the latest `dev`, PRs into `dev`, and squash-merges. **Branches are never deleted after merge** — topic branches and `dev` are both kept as a record of the work. Periodically, once `dev` is stable, PR `dev` into `main` with a regular merge commit (not squash). Commit messages are Conventional Commits: `type(scope): subject`. Full rules in `AGENTS/GIT_WORKFLOW.md`.
 
 ## Commands
 
