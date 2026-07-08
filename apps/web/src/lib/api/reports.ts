@@ -35,3 +35,18 @@ export async function getMyReports(): Promise<ReportWithRelations[]> {
   const { data } = await api.get<ApiResponse<ReportWithRelations[]>>('/reports/my');
   return data.data;
 }
+
+export interface ReportsFilter {
+  userId?: string;
+  projectId?: string;
+  startDate?: string;
+  endDate?: string;
+}
+
+/** Manager-only. Axios omits `undefined` params from the query string. */
+export async function getAllReports(filters: ReportsFilter): Promise<ReportWithRelations[]> {
+  const { data } = await api.get<ApiResponse<ReportWithRelations[]>>('/reports', {
+    params: filters,
+  });
+  return data.data;
+}
