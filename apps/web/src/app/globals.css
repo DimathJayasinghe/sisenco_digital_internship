@@ -8,3 +8,9 @@
 body {
   @apply bg-zinc-950 text-zinc-100 antialiased;
 }
+
+/* Links don't go through the Button primitive's focus-ring utilities, so they
+   need their own — same violet ring, kept consistent app-wide. */
+a:focus-visible {
+  @apply outline-none ring-2 ring-violet-500 ring-offset-2 ring-offset-zinc-950;
+}

@@ -100,14 +100,20 @@ export function ReportsTable({ users, projects }: ReportsTableProps): ReactNode 
             <tbody>
               {reports.map((report) => {
                 const isExpanded = expandedId === report.id;
+                const rowLabel = `${report.user.firstName} ${report.user.lastName}, ${report.project.name}, ${formatWeekRange(report.weekStartDate)}`;
                 return (
                   <Fragment key={report.id}>
-                    <tr
-                      onClick={() => setExpandedId(isExpanded ? null : report.id)}
-                      className="cursor-pointer border-b border-white/5 text-zinc-200 transition-colors hover:bg-white/5"
-                    >
+                    <tr className="border-b border-white/5 text-zinc-200 transition-colors hover:bg-white/5">
                       <td className="px-4 py-2.5 text-zinc-500">
-                        {isExpanded ? <ChevronDown size={16} /> : <ChevronRight size={16} />}
+                        <button
+                          type="button"
+                          onClick={() => setExpandedId(isExpanded ? null : report.id)}
+                          aria-expanded={isExpanded}
+                          aria-label={`${isExpanded ? 'Collapse' : 'Expand'} details for ${rowLabel}`}
+                          className="transition-colors hover:text-zinc-100"
+                        >
+                          {isExpanded ? <ChevronDown size={16} /> : <ChevronRight size={16} />}
+                        </button>
                       </td>
                       <td className="px-4 py-2.5">
                         {report.user.firstName} {report.user.lastName}
