@@ -86,6 +86,16 @@ Tracked in-session as tasks #1-8 (design system → auth → layout → member r
 - [x] Patched the placeholder stub pages (`/`, `/login`, `/register`, `/dashboard`, `/reports`) off the now-deleted old token classes so the app isn't visually broken mid-build
 - [x] Verified in an actual browser, not just typecheck/lint: installed Playwright + Chromium in a scratch dir (not a project dependency), ran the dev server, screenshotted `/` and `/login` — glass card border/fill and violet button render exactly as specified
 
+### 2.2 Auth Flow — DONE (`feat/web-auth-flow`)
+
+- [x] `lib/api/client.ts` (moved from `lib/api.ts`), `lib/api/auth.ts` (typed request functions), `lib/api/error.ts` (`getApiErrorMessage` — unwraps the `{statusCode, error, message}` envelope, `message` can be `string | string[]`)
+- [x] `hooks/useAuth.ts` — `useCurrentUser` (query, `retry: false` since a 401 just means logged-out), `useLogin`/`useRegister` (mutations, seed the auth query cache on success), `useLogout` (clears the whole query cache, not just auth — nothing should leak across sessions on a shared machine)
+- [x] `(auth)/login` + `(auth)/register` pages — plain `useState` controlled forms (no new form-library dependency), native HTML5 validation (`required`/`type="email"`/`minLength`), server error surfaced via `getApiErrorMessage`. Login redirects by role (`MANAGER` → `/dashboard`, else `/reports`) or to `?redirect=` if present; register always lands on `/reports` since registration is always `TEAM_MEMBER`
+- [x] `useSearchParams` in the login form required a `Suspense` boundary in `page.tsx` to avoid a `next build` error — extracted into `LoginForm.tsx`
+- [x] `middleware.ts` rewritten: decodes (does not verify — that's the backend's job) the JWT payload server-side to read `role`, redirects unauthenticated users to `/login?redirect=...` and `TEAM_MEMBER` away from manager routes to `/unauthorized` (new page), per `SECURITY_GUIDELINES.md §2`. No new dependency — base64url decode via the Edge runtime's built-in `atob`
+- [x] Smoke-tested against the real API end-to-end in a headless browser: unauthenticated redirect with correct `?redirect=` param, register → auto-login → `/reports`, wrong-password shows the generic error immediately, correct login redirects by role, `TEAM_MEMBER` blocked from `/dashboard` → `/unauthorized`, `MANAGER` correctly allowed into `/dashboard`
+- [x] Hit an environment snag mid-task: the Docker daemon had gone down (containers exited ~3 hours earlier — an environment restart, not something in this session caused it) and needed `docker compose up -d --build` again before the live-API browser tests could run
+
 ## Phase 3 — AI Chat Assistant (Bonus)
 
 - [ ] Not started — deferred until Phase 2 is functionally complete
