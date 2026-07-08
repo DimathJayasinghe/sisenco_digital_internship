@@ -46,7 +46,7 @@ Rules:
 - Keep branches **short-lived** (hours to a couple of days) and **narrowly scoped** — one feature or fix per branch.
 - **Branch from the latest `dev`** (never from `main` directly); rebase on `dev` before opening the PR to keep history linear.
 - PR target is **`dev`**.
-- Delete the branch after merge.
+- **Do not delete branches after merge — topic branches and `dev` are both kept.** They're a record of the work; deleting them after a squash-merge is the default GitHub behavior but is explicitly overridden here.
 
 ### Promoting `dev` → `main`
 
@@ -79,7 +79,7 @@ Work proceeds in the phase order fixed by `AGENT_RULES.md`: **Backend → Fronte
 2.  **PR description must cover:** what changed, why, how it was verified (commands run / screenshots), and any follow-ups. Link the requirement it satisfies (e.g. "Assignment §2 — Personal Report Page").
 3.  **Green checks required before merge:** lint (zero warnings), typecheck (`strict`, zero `any`), build, and tests where present. CI or the pre-commit hooks enforce this.
 4.  **Self-review the diff** before requesting review — no dead code, no commented-out blocks, no stray files.
-5.  **Merge strategy: Squash and merge** into `dev`. One clean, Conventional-Commit-formatted commit per PR. Delete the branch on merge.
+5.  **Merge strategy: Squash and merge** into `dev`. One clean, Conventional-Commit-formatted commit per PR. **Do not delete the branch on merge** — keep it (see §2).
 6.  Keep PRs **small and focused** — a reviewer should grasp the whole change in one sitting. Split large features across sequential PRs.
 7.  Merging one topic branch into `dev` moves `dev`'s tip forward, so **immediately rebase any other still-open topic branches onto the new `dev`** before they're next in line to merge (see §5) — otherwise their diff balloons to include already-merged work.
 8.  The separate **`dev` → `main` promotion PR** (§2) follows the same review bar (green checks, self-review) but uses a merge commit, not squash.
@@ -92,7 +92,7 @@ Work proceeds in the phase order fixed by `AGENT_RULES.md`: **Backend → Fronte
 - If a topic branch was itself branched from another not-yet-merged topic branch (a stacked branch), rebase it with `git rebase --onto origin/dev <old-parent-tip> <branch>` once the parent merges, so only its own commits replay onto the new `dev`.
 - Resolve conflicts locally and re-run lint/typecheck/tests after a rebase.
 - Only force-push to **your own** topic branch (`git push --force-with-lease`) — never to `dev` or `main`.
-- **Known GitHub quirk:** if a PR's base branch is deleted (e.g. its parent topic branch was just squash-merged and deleted), GitHub auto-**closes** the PR rather than retargeting it. Avoid this by retargeting any PR based on a soon-to-be-deleted branch to `dev` _before_ merging/deleting that branch. If a PR does get closed this way, rebase onto `dev` and open a fresh PR (same content, new number).
+- **Known GitHub quirk (now moot under the keep-all-branches rule):** if a PR's base branch is deleted, GitHub auto-**closes** the PR rather than retargeting it, instead of just retargeting it. This bit us once, while branches were still being deleted after merge, on a stacked PR whose base got deleted out from under it — the fix was rebasing onto `dev` and opening a fresh PR. Since branches are no longer deleted, this can't recur, but the recovery steps are worth keeping in mind: retarget the PR's base to `dev`, or if it already auto-closed, rebase onto `dev` and open a fresh PR (same content, new number).
 
 ---
 
@@ -128,9 +128,10 @@ git commit -m "feat(reports): add submit endpoint with LATE derivation"
 # stay current before opening the PR
 git fetch origin && git rebase origin/dev
 
-# publish and open PR (target dev, squash-merge, then delete branch)
+# publish and open PR (target dev, squash-merge — do NOT delete the branch)
 git push -u origin feat/report-submission
 gh pr create --base dev --head feat/report-submission --title "feat(reports): add submit endpoint with LATE derivation"
+gh pr merge --squash   # no --delete-branch
 
 # ...later, once dev is stable and a batch of features is verified...
 # promote dev -> main with a merge commit (not squash)
