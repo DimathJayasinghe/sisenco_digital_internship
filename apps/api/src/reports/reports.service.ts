@@ -20,7 +20,7 @@ export class ReportsService {
   constructor(private readonly prisma: PrismaService) {}
 
   async create(userId: string, dto: CreateReportDto): Promise<ReportWithRelations> {
-    await this.assertActiveProject(dto.projectId);
+    await this.assertProjectAccessible(dto.projectId, userId);
 
     const weekStartDate = new Date(dto.weekStartDate);
     const weekEndDate = computeWeekEndDate(weekStartDate);
@@ -96,7 +96,7 @@ export class ReportsService {
     await this.findOwnedDraftOrThrow(id, requestingUserId);
 
     if (dto.projectId !== undefined) {
-      await this.assertActiveProject(dto.projectId);
+      await this.assertProjectAccessible(dto.projectId, requestingUserId);
     }
 
     let weekStartDate: Date | undefined;
@@ -165,11 +165,28 @@ export class ReportsService {
     return existing;
   }
 
-  /** SECURITY_GUIDELINES.md §6 — project_id must reference a real, active project. */
-  private async assertActiveProject(projectId: string): Promise<void> {
+  /**
+   * SECURITY_GUIDELINES.md §6 — project_id must reference a real, active project.
+   * DATABASE.md §3 — user_projects "restricts which projects a member can report
+   * on": if this member has any assignments at all, projectId must be one of
+   * them; a member with zero assignments is unrestricted (assignment is opt-in).
+   */
+  private async assertProjectAccessible(projectId: string, userId: string): Promise<void> {
     const project = await this.prisma.project.findUnique({ where: { id: projectId } });
     if (!project || !project.isActive) {
       throw new BadRequestException('projectId must reference an active project');
+    }
+
+    const assignmentCount = await this.prisma.userProject.count({ where: { userId } });
+    if (assignmentCount === 0) {
+      return;
+    }
+
+    const isAssigned = await this.prisma.userProject.findUnique({
+      where: { userId_projectId: { userId, projectId } },
+    });
+    if (!isAssigned) {
+      throw new ForbiddenException('You are not assigned to this project');
     }
   }
 
