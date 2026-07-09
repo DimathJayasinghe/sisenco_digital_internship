@@ -1,4 +1,4 @@
-import type { HTMLAttributes, ReactNode } from 'react';
+import { forwardRef, type HTMLAttributes, type ReactNode } from 'react';
 import { cn } from '@/lib/utils';
 
 interface CardProps extends HTMLAttributes<HTMLDivElement> {
@@ -7,9 +7,13 @@ interface CardProps extends HTMLAttributes<HTMLDivElement> {
 }
 
 /** Solid surface + hard offset shadow — AGENTS/UI_UX_DESIGN.md §4. */
-export function Card({ className, hero = false, ...props }: CardProps): ReactNode {
+export const Card = forwardRef<HTMLDivElement, CardProps>(function Card(
+  { className, hero = false, ...props },
+  ref,
+): ReactNode {
   return (
     <div
+      ref={ref}
       className={cn(
         'rounded-none border-2 border-zinc-900 bg-white p-6 dark:border-zinc-300 dark:bg-zinc-800',
         hero
@@ -20,4 +24,4 @@ export function Card({ className, hero = false, ...props }: CardProps): ReactNod
       {...props}
     />
   );
-}
+});

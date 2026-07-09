@@ -37,6 +37,19 @@ const config: Config = {
         'brutal-red': '4px 4px 0 0 #dc2626',
         'brutal-red-sm': '2px 2px 0 0 #ef4444',
       },
+      keyframes: {
+        'fade-in-up': {
+          '0%': { opacity: '0', transform: 'translateY(12px)' },
+          '100%': { opacity: '1', transform: 'translateY(0)' },
+        },
+      },
+      // Landing-page hero entrance only — pure CSS so it works without a
+      // client component. Feature-card reveal/pointer effects are JS-driven
+      // (components/landing/PointerCard.tsx) since they depend on scroll
+      // position and pointer coordinates, not just mount time.
+      animation: {
+        'fade-in-up': 'fade-in-up 0.5s ease-out both',
+      },
     },
   },
   plugins: [],

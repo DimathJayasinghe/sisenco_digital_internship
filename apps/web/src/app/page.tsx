@@ -1,6 +1,7 @@
 import { BarChart3, FileText, Users } from 'lucide-react';
 import Link from 'next/link';
-import { Card } from '@/components/ui/Card';
+import { PointerCard } from '@/components/landing/PointerCard';
+import { ScrollProgressBar } from '@/components/landing/ScrollProgressBar';
 import { ThemeToggle } from '@/components/ui/ThemeToggle';
 
 const FEATURES = [
@@ -24,6 +25,7 @@ const FEATURES = [
 export default function HomePage(): React.ReactNode {
   return (
     <div className="min-h-screen bg-zinc-100 dark:bg-zinc-900">
+      <ScrollProgressBar />
       <header className="border-b-2 border-zinc-900 dark:border-zinc-300">
         <div className="mx-auto flex max-w-5xl items-center justify-between px-6 py-4">
           <span className="text-sm font-bold tracking-tight text-zinc-900 dark:text-zinc-100">
@@ -45,7 +47,7 @@ export default function HomePage(): React.ReactNode {
       </header>
 
       <main>
-        <section className="mx-auto max-w-3xl px-6 py-20 text-center">
+        <section className="mx-auto max-w-3xl animate-fade-in-up px-6 py-20 text-center motion-reduce:animate-none">
           <h1 className="text-4xl font-bold tracking-tight text-zinc-900 dark:text-zinc-100 md:text-6xl">
             Weekly reports,
             <br />
@@ -76,8 +78,8 @@ export default function HomePage(): React.ReactNode {
 
         <section className="mx-auto max-w-5xl px-6 pb-24">
           <div className="grid grid-cols-1 gap-4 sm:grid-cols-3">
-            {FEATURES.map(({ icon: Icon, title, body }) => (
-              <Card key={title} className="p-5">
+            {FEATURES.map(({ icon: Icon, title, body }, index) => (
+              <PointerCard key={title} revealDelayMs={index * 100} className="p-5">
                 <Icon
                   size={22}
                   strokeWidth={2.25}
@@ -86,7 +88,7 @@ export default function HomePage(): React.ReactNode {
                 />
                 <p className="mt-3 text-base font-bold text-zinc-900 dark:text-zinc-100">{title}</p>
                 <p className="mt-1.5 text-sm text-zinc-600 dark:text-zinc-400">{body}</p>
-              </Card>
+              </PointerCard>
             ))}
           </div>
         </section>
