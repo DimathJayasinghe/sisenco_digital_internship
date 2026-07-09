@@ -90,7 +90,7 @@ export function ReportsTable({ users, projects }: ReportsTableProps): ReactNode 
         ) : (
           <table className="w-full min-w-[640px] text-sm">
             <thead>
-              <tr className="border-b-2 border-zinc-900 dark:border-zinc-100 bg-zinc-200 dark:bg-zinc-800 text-xs font-bold uppercase tracking-wider text-zinc-700 dark:text-zinc-300">
+              <tr className="border-b-2 border-zinc-900 dark:border-zinc-100 bg-zinc-200 dark:bg-zinc-700 text-xs font-bold uppercase tracking-wider text-zinc-700 dark:text-zinc-300">
                 <th className="w-8 px-4 py-2.5" aria-hidden />
                 <th className="px-4 py-2.5 text-left">Member</th>
                 <th className="px-4 py-2.5 text-left">Project</th>
@@ -105,7 +105,7 @@ export function ReportsTable({ users, projects }: ReportsTableProps): ReactNode 
                 const rowLabel = `${report.user.firstName} ${report.user.lastName}, ${report.project.name}, ${formatWeekRange(report.weekStartDate)}`;
                 return (
                   <Fragment key={report.id}>
-                    <tr className="border-b border-zinc-300 dark:border-zinc-800 text-zinc-800 dark:text-zinc-200 transition-colors hover:bg-zinc-200 dark:hover:bg-zinc-800">
+                    <tr className="border-b border-zinc-300 dark:border-zinc-700 text-zinc-800 dark:text-zinc-200 transition-colors hover:bg-zinc-200 dark:hover:bg-zinc-700">
                       <td className="px-4 py-2.5 text-zinc-600 dark:text-zinc-400">
                         <button
                           type="button"
@@ -134,7 +134,7 @@ export function ReportsTable({ users, projects }: ReportsTableProps): ReactNode 
                       </td>
                     </tr>
                     {isExpanded && (
-                      <tr className="border-b border-zinc-300 dark:border-zinc-800 bg-zinc-100 dark:bg-zinc-950">
+                      <tr className="border-b border-zinc-300 dark:border-zinc-700 bg-zinc-100 dark:bg-zinc-900">
                         <td colSpan={6} className="px-4 py-4">
                           <dl className="grid grid-cols-1 gap-4 sm:grid-cols-3">
                             <div>

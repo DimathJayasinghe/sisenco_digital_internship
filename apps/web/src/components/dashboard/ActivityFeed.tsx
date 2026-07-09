@@ -15,7 +15,7 @@ export function ActivityFeed({ data }: ActivityFeedProps): ReactNode {
       {data.length === 0 ? (
         <p className="mt-4 text-sm text-zinc-600 dark:text-zinc-400">No submissions yet.</p>
       ) : (
-        <ul className="mt-4 divide-y divide-zinc-300 dark:divide-zinc-800">
+        <ul className="mt-4 divide-y divide-zinc-300 dark:divide-zinc-700">
           {data.map((report) => (
             <li key={report.id} className="flex items-center justify-between gap-4 py-2.5 text-sm">
               <div className="min-w-0">

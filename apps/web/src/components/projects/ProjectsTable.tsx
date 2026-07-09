@@ -27,7 +27,7 @@ export function ProjectsTable({ projects, users }: ProjectsTableProps): ReactNod
     <Card className="mt-4 overflow-x-auto p-4">
       <table className="w-full min-w-[640px] text-sm">
         <thead>
-          <tr className="border-b-2 border-zinc-900 dark:border-zinc-100 bg-zinc-200 dark:bg-zinc-800 text-xs font-bold uppercase tracking-wider text-zinc-700 dark:text-zinc-300">
+          <tr className="border-b-2 border-zinc-900 dark:border-zinc-100 bg-zinc-200 dark:bg-zinc-700 text-xs font-bold uppercase tracking-wider text-zinc-700 dark:text-zinc-300">
             <th className="w-8 px-4 py-2.5" aria-hidden />
             <th className="px-4 py-2.5 text-left">Name</th>
             <th className="px-4 py-2.5 text-left">Description</th>
@@ -83,7 +83,7 @@ function ProjectRow({ project, users, isExpanded, onToggle }: ProjectRowProps): 
 
   return (
     <Fragment>
-      <tr className="border-b border-zinc-300 dark:border-zinc-800 text-zinc-800 dark:text-zinc-200">
+      <tr className="border-b border-zinc-300 dark:border-zinc-700 text-zinc-800 dark:text-zinc-200">
         <td className="px-4 py-2.5 text-zinc-600 dark:text-zinc-400">
           <button
             type="button"
@@ -131,7 +131,7 @@ function ProjectRow({ project, users, isExpanded, onToggle }: ProjectRowProps): 
         </td>
       </tr>
       {isExpanded && (
-        <tr className="border-b border-zinc-300 dark:border-zinc-800 bg-zinc-100 dark:bg-zinc-950">
+        <tr className="border-b border-zinc-300 dark:border-zinc-700 bg-zinc-100 dark:bg-zinc-900">
           <td colSpan={5} className="space-y-6 px-4 py-4">
             {isEditing && (
               <form onSubmit={handleSave} className="space-y-3">

@@ -23,7 +23,7 @@ const FEATURES = [
 
 export default function HomePage(): React.ReactNode {
   return (
-    <div className="min-h-screen bg-zinc-100 dark:bg-zinc-950">
+    <div className="min-h-screen bg-zinc-100 dark:bg-zinc-900">
       <header className="border-b-2 border-zinc-900 dark:border-zinc-100">
         <div className="mx-auto flex max-w-5xl items-center justify-between px-6 py-4">
           <span className="text-sm font-bold tracking-tight text-zinc-900 dark:text-zinc-100">
@@ -36,7 +36,7 @@ export default function HomePage(): React.ReactNode {
                 match Button's ghost variant instead. */}
             <Link
               href="/login"
-              className="rounded-none border-2 border-transparent px-4 py-2 text-sm font-medium text-zinc-600 transition-colors hover:border-zinc-900 hover:bg-zinc-200 hover:text-zinc-900 dark:text-zinc-400 dark:hover:border-zinc-100 dark:hover:bg-zinc-900 dark:hover:text-zinc-100"
+              className="rounded-none border-2 border-transparent px-4 py-2 text-sm font-medium text-zinc-600 transition-colors hover:border-zinc-900 hover:bg-zinc-200 hover:text-zinc-900 dark:text-zinc-400 dark:hover:border-zinc-100 dark:hover:bg-zinc-800 dark:hover:text-zinc-100"
             >
               Sign in
             </Link>
@@ -67,7 +67,7 @@ export default function HomePage(): React.ReactNode {
             </Link>
             <Link
               href="/login"
-              className="rounded-none border-2 border-zinc-900 bg-white px-4 py-2 font-medium text-zinc-900 shadow-brutal transition-all hover:translate-x-1 hover:translate-y-1 hover:shadow-none dark:border-zinc-100 dark:bg-zinc-900 dark:text-zinc-100 dark:shadow-brutal-dark"
+              className="rounded-none border-2 border-zinc-900 bg-white px-4 py-2 font-medium text-zinc-900 shadow-brutal transition-all hover:translate-x-1 hover:translate-y-1 hover:shadow-none dark:border-zinc-100 dark:bg-zinc-800 dark:text-zinc-100 dark:shadow-brutal-dark"
             >
               Sign in
             </Link>

@@ -15,9 +15,9 @@ const VARIANT_CLASSES: Record<Variant, string> = {
   primary:
     'border-2 border-zinc-900 dark:border-zinc-100 bg-violet-600 text-white shadow-brutal-violet hover:translate-x-1 hover:translate-y-1 hover:shadow-none',
   secondary:
-    'border-2 border-zinc-900 dark:border-zinc-100 bg-white text-zinc-900 dark:bg-zinc-900 dark:text-zinc-100 shadow-brutal dark:shadow-brutal-dark hover:translate-x-1 hover:translate-y-1 hover:shadow-none',
+    'border-2 border-zinc-900 dark:border-zinc-100 bg-white text-zinc-900 dark:bg-zinc-800 dark:text-zinc-100 shadow-brutal dark:shadow-brutal-dark hover:translate-x-1 hover:translate-y-1 hover:shadow-none',
   ghost:
-    'border-2 border-transparent text-zinc-600 dark:text-zinc-400 hover:border-zinc-900 dark:hover:border-zinc-100 hover:bg-zinc-200 dark:hover:bg-zinc-900 hover:text-zinc-900 dark:hover:text-zinc-100',
+    'border-2 border-transparent text-zinc-600 dark:text-zinc-400 hover:border-zinc-900 dark:hover:border-zinc-100 hover:bg-zinc-200 dark:hover:bg-zinc-800 hover:text-zinc-900 dark:hover:text-zinc-100',
   danger:
     'border-2 border-zinc-900 dark:border-zinc-100 bg-red-600 text-white shadow-brutal-red hover:translate-x-1 hover:translate-y-1 hover:shadow-none',
 };
@@ -35,7 +35,7 @@ export const Button = forwardRef<HTMLButtonElement, ButtonProps>(function Button
       ref={ref}
       type={type}
       className={cn(
-        'rounded-none px-4 py-2 text-sm font-medium transition-all focus:outline-none focus-visible:ring-2 focus-visible:ring-violet-500 focus-visible:ring-offset-2 focus-visible:ring-offset-zinc-100 dark:focus-visible:ring-offset-zinc-950 disabled:pointer-events-none disabled:cursor-not-allowed disabled:opacity-40',
+        'rounded-none px-4 py-2 text-sm font-medium transition-all focus:outline-none focus-visible:ring-2 focus-visible:ring-violet-500 focus-visible:ring-offset-2 focus-visible:ring-offset-zinc-100 dark:focus-visible:ring-offset-zinc-900 disabled:pointer-events-none disabled:cursor-not-allowed disabled:opacity-40',
         VARIANT_CLASSES[variant],
         className,
       )}

@@ -32,9 +32,9 @@ const CHART_COLORS = {
     line: '#7c3aed',
   },
   dark: {
-    grid: '#27272a',
+    grid: '#3f3f46',
     axis: '#a1a1aa',
-    tooltipBg: '#18181b',
+    tooltipBg: '#27272a',
     tooltipBorder: '#f4f4f5',
     label: '#f4f4f5',
     line: '#8b5cf6',
