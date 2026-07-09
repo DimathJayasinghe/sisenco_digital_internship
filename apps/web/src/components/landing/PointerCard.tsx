@@ -1,13 +1,6 @@
 'use client';
 
-import {
-  useEffect,
-  useRef,
-  useState,
-  type CSSProperties,
-  type MouseEvent,
-  type ReactNode,
-} from 'react';
+import { useEffect, useRef, useState, type MouseEvent, type ReactNode } from 'react';
 import { Card } from '@/components/ui/Card';
 import { cn } from '@/lib/utils';
 
@@ -44,18 +37,28 @@ export function PointerCard({
     }
     const node = nodeRef.current;
     if (!node) return;
+    let revealTimer: ReturnType<typeof setTimeout> | undefined;
+    // The stagger is applied here, as a delayed state update, rather than a
+    // CSS `transition-delay` — a `transition-delay` set once and left on the
+    // element would also delay every future hover-driven box-shadow
+    // transition indefinitely (transition-all covers both), making the
+    // later cards' pointer tracking feel unresponsive forever, not just
+    // during the one-time entrance animation.
     const observer = new IntersectionObserver(
       ([entry]) => {
         if (entry.isIntersecting) {
-          setVisible(true);
+          revealTimer = setTimeout(() => setVisible(true), revealDelayMs);
           observer.disconnect();
         }
       },
       { threshold: 0.2 },
     );
     observer.observe(node);
-    return () => observer.disconnect();
-  }, []);
+    return () => {
+      observer.disconnect();
+      clearTimeout(revealTimer);
+    };
+  }, [revealDelayMs]);
 
   function handleMouseMove(event: MouseEvent<HTMLDivElement>): void {
     if (reduceMotionRef.current) return;
@@ -67,17 +70,12 @@ export function PointerCard({
     setShadow(`${x}px ${y}px 0 0 var(--pointer-shadow-color)`);
   }
 
-  const style: CSSProperties = {
-    transitionDelay: visible ? `${revealDelayMs}ms` : undefined,
-    ...(shadow && { boxShadow: shadow }),
-  };
-
   return (
     <Card
       ref={nodeRef}
       onMouseMove={handleMouseMove}
       onMouseLeave={() => setShadow(undefined)}
-      style={style}
+      style={shadow ? { boxShadow: shadow } : undefined}
       className={cn(
         '[--pointer-shadow-color:#18181b] dark:[--pointer-shadow-color:#d4d4d8]',
         'transition-all duration-300 ease-out motion-reduce:transition-none',
