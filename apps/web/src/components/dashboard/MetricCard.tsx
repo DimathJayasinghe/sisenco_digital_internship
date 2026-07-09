@@ -18,11 +18,15 @@ export function MetricCard({
 }: MetricCardProps): ReactNode {
   return (
     <Card className="p-4" hero={hero}>
-      <p className="text-xs font-bold uppercase tracking-wider text-zinc-400">{label}</p>
+      <p className="text-xs font-bold uppercase tracking-wider text-zinc-600 dark:text-zinc-400">
+        {label}
+      </p>
       <p
         className={cn(
           'mt-2 font-bold tabular-nums tracking-tight',
-          hero ? 'text-4xl text-violet-400 md:text-5xl' : 'text-3xl text-zinc-100',
+          hero
+            ? 'text-4xl text-violet-600 dark:text-violet-400 md:text-5xl'
+            : 'text-3xl text-zinc-900 dark:text-zinc-100',
           valueClassName,
         )}
       >

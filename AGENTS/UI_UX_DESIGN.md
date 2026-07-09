@@ -1,8 +1,8 @@
 # UI/UX Design Guidelines
 
-The frontend delivers a **restrained dark-mode neo-brutalism**: a near-black zinc canvas, solid zinc-900 surfaces framed by a single consistent high-contrast border, hard offset "brutal" shadows instead of blurred `shadow-lg`s, sharp (unrounded) corners, and one saturated violet accent used deliberately. It is brutalist in its bones (visible structure, physical-feeling interactions) and minimalist in its execution (one border color, one accent, generous whitespace, no color-blocking, no clutter). These guidelines are non-negotiable. All agents building UI components must adhere to them strictly.
+The frontend delivers a **restrained neo-brutalism, in both light and dark**: a near-black zinc canvas (or a light zinc-100 canvas in light mode), solid surfaces framed by a single consistent high-contrast border, hard offset "brutal" shadows instead of blurred `shadow-lg`s, sharp (unrounded) corners, and one saturated violet accent used deliberately. It is brutalist in its bones (visible structure, physical-feeling interactions) and minimalist in its execution (one border color per theme, one accent, generous whitespace, no color-blocking, no clutter). These guidelines are non-negotiable. All agents building UI components must adhere to them strictly.
 
-**Scope decision:** this system is designed **dark-mode only**. Nothing in the brief calls for a light theme, and maintaining two parallel token sets (and re-verifying contrast for both) is scope not asked for. If a light mode is wanted later, flag it — it's a new design pass, not a toggle.
+**Scope decision (revised):** this system originally shipped dark-mode only, with the explicit note that a light mode would be "a new design pass, not a toggle" if ever requested. It was requested — see §10 for the light-mode palette, the verified contrast numbers, and the toggle mechanism (`hooks/useTheme.tsx`, a `.dark` class on `<html>`). **Every themed class in every component is now a `<light-class> dark:<dark-class>` pair** — there is no more "the dark value is just the value," both themes are first-class and both must be specified whenever a new themed class is added.
 
 **Provenance:** this replaces the earlier "glass" system (translucent `bg-white/5`/`border-white/10` surfaces, soft `rounded-xl` corners, no shadows). That system is gone — do not resurrect glass/translucent surface patterns anywhere in new work.
 
@@ -260,3 +260,72 @@ Every color/border pair in §2 was checked against the actual WCAG 2.1 contrast 
 6. All interactive elements are keyboard-navigable; semantic HTML (`<button>`, `<nav>`, `<main>`, `<form>`, `<table>`) throughout; every icon-only control gets an `aria-label`; multiple instances of the same control on one page (e.g. a table's per-row "Edit" button) get a **row-specific** `aria-label`, not a generic one.
 7. Inline prose links carry an always-on underline (§5) — don't rely on color alone to signal "this is a link."
 8. If a new color or border pairing is introduced later that isn't in the table above, verify it the same way (relative-luminance contrast ratio, remembering borders need the 3:1 non-text threshold, not 4.5:1) before shipping it — don't eyeball dark-mode contrast, it's notoriously easy to get wrong by feel.
+
+---
+
+## 10. Light Mode & Theme Toggle
+
+Added after the system initially shipped dark-only (§ intro). Same neo-brutalist bones — solid surfaces, one structural border, hard offset shadows, sharp corners — just with the tonal relationship inverted: **light canvas is darker than light surface** (mirrors dark mode, where canvas `zinc-950` is darker than surface `zinc-900` — the surface is always "the brightest/cleanest" element in either theme).
+
+### Mechanism
+
+- Tailwind's `class` dark-mode strategy (`darkMode: 'class'` in `tailwind.config.ts`). A `.dark` class on `<html>` switches every `dark:`-prefixed utility on.
+- `hooks/useTheme.tsx` — a small context provider (`ThemeProvider` + `useTheme()`), **not** a TanStack Query hook, since this is client-only UI state, not server state. Persists to `localStorage` (`theme` key), defaults to the OS `prefers-color-scheme` if nothing is stored, and falls back to dark if neither is available (matches the app's original design intent).
+- An inline, render-blocking `<script>` in `app/layout.tsx` (before `<Providers>`) sets the `.dark` class synchronously, before hydration — this is what prevents a flash of the wrong theme on load. `ThemeProvider`'s own effects just keep React's state in sync with what the script already set.
+- `components/ui/ThemeToggle.tsx` — a sun/moon icon button (`lucide-react`), placed in the member `Navbar`, the manager `Sidebar` (both the account-footer area and the mobile top bar), and the landing page header.
+
+### The one hard rule
+
+**Every themed class is a pair: `<light> dark:<dark>`.** There is no implicit default — a class written without its `dark:` counterpart (or vice versa) is a bug, not a simplification, because it means that value doesn't change between themes when everything around it does. When adding a new component, write both halves of every color/border/shadow class at the same time; don't ship "dark works, I'll add light later."
+
+### Color System — Light-Mode Equivalents
+
+Same roles as §2, same relationship rules, tonal direction inverted:
+
+| Role                              | Dark (`dark:`)                                         | Light (default)                        | Notes                                                                                                                                                                                                                              |
+| --------------------------------- | ------------------------------------------------------ | -------------------------------------- | ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| Canvas                            | `bg-zinc-950`                                          | `bg-zinc-100`                          | Page background                                                                                                                                                                                                                    |
+| Surface (cards)                   | `bg-zinc-900`                                          | `bg-white`                             | Always the brightest/cleanest element in either theme                                                                                                                                                                              |
+| Raised (table header, hover tint) | `bg-zinc-800` / `bg-zinc-900`*                         | `bg-zinc-200`                          | *Ghost-button/nav-link hover in dark mode reuses the surface tone (`zinc-900`) rather than the true raised tone (`zinc-800`) — a pre-existing minor inconsistency carried forward unchanged, not introduced by the light-mode work |
+| Recessed (inputs)                 | `bg-zinc-950`                                          | `bg-zinc-100`                          | Same tone as canvas in both themes                                                                                                                                                                                                 |
+| Structural border                 | `border-zinc-100`                                      | `border-zinc-900`                      | The one universal border color, per theme                                                                                                                                                                                          |
+| Muted border                      | `border-zinc-500`                                      | `border-zinc-500`                      | **Same value in both themes** — 4.1:1 on `zinc-950`, 4.83:1 on white, both clear the 3:1 non-text minimum                                                                                                                          |
+| Divider (decorative)              | `border-zinc-800`                                      | `border-zinc-300`                      | Not subject to the 3:1 rule (decorative, not a component boundary)                                                                                                                                                                 |
+| Text primary                      | `text-zinc-100`                                        | `text-zinc-900`                        |                                                                                                                                                                                                                                    |
+| Text body                         | `text-zinc-300`                                        | `text-zinc-700`                        |                                                                                                                                                                                                                                    |
+| Text secondary                    | `text-zinc-400`                                        | `text-zinc-600`                        | Labels, captions, table headers                                                                                                                                                                                                    |
+| Placeholder only                  | `text-zinc-500`                                        | `text-zinc-400`                        | Fails body-text AA in both themes — placeholder use only                                                                                                                                                                           |
+| Shadow (neutral)                  | `shadow-brutal-dark` etc. (zinc-100 offset)            | `shadow-brutal` etc. (zinc-900 offset) | See `tailwind.config.ts` — `brutal`/`brutal-lg`/`brutal-sm` are light-default, `-dark` suffixed variants apply under `dark:`                                                                                                       |
+| Shadow (violet/red)               | `shadow-brutal-violet` / `shadow-brutal-red` (+ `-sm`) | _same_                                 | Theme-invariant — same accent hex in both themes, no `dark:` pair needed                                                                                                                                                           |
+| Accent text (links)               | `text-violet-400`                                      | `text-violet-600`                      |                                                                                                                                                                                                                                    |
+| Accent hover                      | `text-violet-300` (brightens)                          | `text-violet-700` (darkens)            | Both directions _increase_ contrast against their respective background — the principle is "hover moves toward the background's high-contrast extreme," not "always lighten" or "always darken"                                    |
+| Badge `SUBMITTED`                 | `emerald-500` / `emerald-400`                          | `emerald-700`                          | `emerald-500`/`-400` don't clear 4.5:1 AA on white; `-700` does (5.48:1)                                                                                                                                                           |
+| Badge `LATE`                      | `red-500` / `red-400`                                  | `red-700`                              | Consistency with the other badges' one-shade-darker light treatment (plain `red-600` alone clears AA at 4.83:1, but `-700` keeps the "how much darker" rule uniform across all three statuses)                                     |
+| Badge `PENDING`                   | `amber-500` / `amber-400`                              | `amber-700`                            | `amber-500`/`-600` don't clear 4.5:1 AA on white; `-700` does (5.02:1)                                                                                                                                                             |
+| Badge `DRAFT`                     | `border-zinc-500` / `text-zinc-400`                    | `border-zinc-500` / `text-zinc-600`    | Border unchanged (muted border is theme-invariant, see above); text uses the theme's secondary-text shade                                                                                                                          |
+
+### Charts (Recharts) — theme-aware hex
+
+Recharts takes raw hex through props/inline styles, not Tailwind classes, so `dark:` variants don't apply. `TrendChart`/`WorkloadChart` call `useTheme()` and select from a small `{ light: {...}, dark: {...} }` hex map (grid stroke, axis stroke, tooltip background/border/label, line/bar color) instead. If a new chart is added, follow the same pattern — don't hardcode a single hex value that only looks right in one theme.
+
+### Verified contrast — light-mode additions to §9's table
+
+| Pair                                                           | Ratio                | AA body (4.5:1) | AA large/UI (3:1)                               |
+| -------------------------------------------------------------- | -------------------- | --------------- | ----------------------------------------------- |
+| `zinc-900` text on `zinc-100` canvas / white surface           | 16.1:1 / 17.7:1      | Pass            | Pass                                            |
+| `zinc-700` text on white (body)                                | 10.4:1               | Pass            | Pass                                            |
+| `zinc-600` text on white / `zinc-100` (secondary)              | 7.7:1 / 7.0:1        | Pass            | Pass                                            |
+| `zinc-400` text on white (placeholder only)                    | 2.6:1                | **Fail**        | —                                               |
+| `zinc-900` border on `zinc-100` / white (structural)           | 16.1:1 / 17.7:1      | —               | Pass                                            |
+| `zinc-400` border on white                                     | 2.6:1                | —               | **Fail** — do not use as a light-mode border    |
+| `zinc-500` border on white (muted border floor)                | 4.83:1               | —               | Pass                                            |
+| `zinc-300` border on white (decorative divider)                | 1.48:1               | —               | N/A — decorative only, not a component boundary |
+| `violet-600` / `violet-700` text on white (link / link hover)  | 5.7:1 / 7.1:1        | Pass            | Pass                                            |
+| `emerald-700` / `red-700` / `amber-700` text on white (badges) | 5.48 / 6.47 / 5.02:1 | Pass            | Pass                                            |
+| `violet-500` focus ring on white                               | 4.23:1               | —               | Pass                                            |
+
+Same binding rule as §9: never eyeball a new light-mode pairing — run it through the actual formula, and remember `zinc-400`/`zinc-600`/`zinc-700` borders that look "fine" on white can still fail the 3:1 non-text minimum (as `zinc-400` did above) — light-mode contrast is just as easy to get wrong by feel as dark-mode's was.
+
+### Landing Page
+
+`app/page.tsx` — a marketing/landing page (not the previous minimal "sign in" screen), following this same system: header with the wordmark, `ThemeToggle`, and a sign-in link; a hero section with the primary/secondary CTA pair (create account / sign in) using the same button-press shadow interaction as the `Button` primitive (styled as a plain `<Link>`, per §5's "an `<a>` must never wrap a `<button>`" rule); a three-card feature grid using the `Card` primitive. It is reachable at all times regardless of auth state — it does not redirect a logged-in user away, matching the previous home page's behavior.

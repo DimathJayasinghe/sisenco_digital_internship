@@ -20,14 +20,14 @@ export function ProjectsTable({ projects, users }: ProjectsTableProps): ReactNod
   const [expandedId, setExpandedId] = useState<string | null>(null);
 
   if (projects.length === 0) {
-    return <p className="py-6 text-sm text-zinc-400">No active projects yet.</p>;
+    return <p className="py-6 text-sm text-zinc-600 dark:text-zinc-400">No active projects yet.</p>;
   }
 
   return (
     <Card className="mt-4 overflow-x-auto p-4">
       <table className="w-full min-w-[640px] text-sm">
         <thead>
-          <tr className="border-b-2 border-zinc-100 bg-zinc-800 text-xs font-bold uppercase tracking-wider text-zinc-300">
+          <tr className="border-b-2 border-zinc-900 dark:border-zinc-100 bg-zinc-200 dark:bg-zinc-800 text-xs font-bold uppercase tracking-wider text-zinc-700 dark:text-zinc-300">
             <th className="w-8 px-4 py-2.5" aria-hidden />
             <th className="px-4 py-2.5 text-left">Name</th>
             <th className="px-4 py-2.5 text-left">Description</th>
@@ -83,23 +83,23 @@ function ProjectRow({ project, users, isExpanded, onToggle }: ProjectRowProps): 
 
   return (
     <Fragment>
-      <tr className="border-b border-zinc-800 text-zinc-200">
-        <td className="px-4 py-2.5 text-zinc-400">
+      <tr className="border-b border-zinc-300 dark:border-zinc-800 text-zinc-800 dark:text-zinc-200">
+        <td className="px-4 py-2.5 text-zinc-600 dark:text-zinc-400">
           <button
             type="button"
             onClick={onToggle}
             aria-expanded={isExpanded}
             aria-label={`${isExpanded ? 'Collapse' : 'Expand'} ${project.name}`}
-            className="transition-colors hover:text-zinc-100"
+            className="transition-colors hover:text-zinc-900 dark:hover:text-zinc-100"
           >
             {isExpanded ? <ChevronDown size={16} /> : <ChevronRight size={16} />}
           </button>
         </td>
         <td className="px-4 py-2.5 font-medium">{project.name}</td>
-        <td className="max-w-xs truncate px-4 py-2.5 text-zinc-400">
+        <td className="max-w-xs truncate px-4 py-2.5 text-zinc-600 dark:text-zinc-400">
           {project.description ?? '—'}
         </td>
-        <td className="px-4 py-2.5 text-zinc-400">
+        <td className="px-4 py-2.5 text-zinc-600 dark:text-zinc-400">
           {new Date(project.createdAt).toLocaleDateString('en-US', {
             month: 'short',
             day: 'numeric',
@@ -131,11 +131,11 @@ function ProjectRow({ project, users, isExpanded, onToggle }: ProjectRowProps): 
         </td>
       </tr>
       {isExpanded && (
-        <tr className="border-b border-zinc-800 bg-zinc-950">
+        <tr className="border-b border-zinc-300 dark:border-zinc-800 bg-zinc-100 dark:bg-zinc-950">
           <td colSpan={5} className="space-y-6 px-4 py-4">
             {isEditing && (
               <form onSubmit={handleSave} className="space-y-3">
-                <p className="text-xs font-medium uppercase tracking-wider text-zinc-400">
+                <p className="text-xs font-medium uppercase tracking-wider text-zinc-600 dark:text-zinc-400">
                   Edit Project
                 </p>
                 <Input
@@ -152,7 +152,9 @@ function ProjectRow({ project, users, isExpanded, onToggle }: ProjectRowProps): 
                   className="min-h-20"
                 />
                 {updateProject.isError && (
-                  <p className="text-xs text-red-400">{getApiErrorMessage(updateProject.error)}</p>
+                  <p className="text-xs text-red-600 dark:text-red-400">
+                    {getApiErrorMessage(updateProject.error)}
+                  </p>
                 )}
                 <div className="flex justify-end gap-2">
                   <Button type="button" variant="ghost" onClick={() => setIsEditing(false)}>

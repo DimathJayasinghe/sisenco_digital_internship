@@ -41,7 +41,7 @@ export function ReportsTable({ users, projects }: ReportsTableProps): ReactNode 
 
   return (
     <Card className="p-4">
-      <p className="text-sm font-bold text-zinc-100">All Team Reports</p>
+      <p className="text-sm font-bold text-zinc-900 dark:text-zinc-100">All Team Reports</p>
 
       <div className="mt-4 grid grid-cols-1 gap-3 sm:grid-cols-2 lg:grid-cols-4">
         <Select label="Member" value={userId} onChange={(event) => setUserId(event.target.value)}>
@@ -80,15 +80,17 @@ export function ReportsTable({ users, projects }: ReportsTableProps): ReactNode 
 
       <div className="mt-4 overflow-x-auto">
         {isLoading ? (
-          <p className="py-6 text-sm text-zinc-400">Loading…</p>
+          <p className="py-6 text-sm text-zinc-600 dark:text-zinc-400">Loading…</p>
         ) : isError ? (
-          <p className="py-6 text-sm text-red-400">Couldn&apos;t load reports.</p>
+          <p className="py-6 text-sm text-red-600 dark:text-red-400">Couldn&apos;t load reports.</p>
         ) : !reports || reports.length === 0 ? (
-          <p className="py-6 text-sm text-zinc-400">No reports match these filters.</p>
+          <p className="py-6 text-sm text-zinc-600 dark:text-zinc-400">
+            No reports match these filters.
+          </p>
         ) : (
           <table className="w-full min-w-[640px] text-sm">
             <thead>
-              <tr className="border-b-2 border-zinc-100 bg-zinc-800 text-xs font-bold uppercase tracking-wider text-zinc-300">
+              <tr className="border-b-2 border-zinc-900 dark:border-zinc-100 bg-zinc-200 dark:bg-zinc-800 text-xs font-bold uppercase tracking-wider text-zinc-700 dark:text-zinc-300">
                 <th className="w-8 px-4 py-2.5" aria-hidden />
                 <th className="px-4 py-2.5 text-left">Member</th>
                 <th className="px-4 py-2.5 text-left">Project</th>
@@ -103,14 +105,14 @@ export function ReportsTable({ users, projects }: ReportsTableProps): ReactNode 
                 const rowLabel = `${report.user.firstName} ${report.user.lastName}, ${report.project.name}, ${formatWeekRange(report.weekStartDate)}`;
                 return (
                   <Fragment key={report.id}>
-                    <tr className="border-b border-zinc-800 text-zinc-200 transition-colors hover:bg-zinc-800">
-                      <td className="px-4 py-2.5 text-zinc-400">
+                    <tr className="border-b border-zinc-300 dark:border-zinc-800 text-zinc-800 dark:text-zinc-200 transition-colors hover:bg-zinc-200 dark:hover:bg-zinc-800">
+                      <td className="px-4 py-2.5 text-zinc-600 dark:text-zinc-400">
                         <button
                           type="button"
                           onClick={() => setExpandedId(isExpanded ? null : report.id)}
                           aria-expanded={isExpanded}
                           aria-label={`${isExpanded ? 'Collapse' : 'Expand'} details for ${rowLabel}`}
-                          className="transition-colors hover:text-zinc-100"
+                          className="transition-colors hover:text-zinc-900 dark:hover:text-zinc-100"
                         >
                           {isExpanded ? <ChevronDown size={16} /> : <ChevronRight size={16} />}
                         </button>
@@ -118,11 +120,13 @@ export function ReportsTable({ users, projects }: ReportsTableProps): ReactNode 
                       <td className="px-4 py-2.5">
                         {report.user.firstName} {report.user.lastName}
                       </td>
-                      <td className="px-4 py-2.5 text-zinc-400">{report.project.name}</td>
-                      <td className="px-4 py-2.5 text-zinc-400">
+                      <td className="px-4 py-2.5 text-zinc-600 dark:text-zinc-400">
+                        {report.project.name}
+                      </td>
+                      <td className="px-4 py-2.5 text-zinc-600 dark:text-zinc-400">
                         {formatWeekRange(report.weekStartDate)}
                       </td>
-                      <td className="px-4 py-2.5 tabular-nums text-zinc-400">
+                      <td className="px-4 py-2.5 tabular-nums text-zinc-600 dark:text-zinc-400">
                         {report.hoursWorked ?? '—'}
                       </td>
                       <td className="px-4 py-2.5">
@@ -130,37 +134,37 @@ export function ReportsTable({ users, projects }: ReportsTableProps): ReactNode 
                       </td>
                     </tr>
                     {isExpanded && (
-                      <tr className="border-b border-zinc-800 bg-zinc-950">
+                      <tr className="border-b border-zinc-300 dark:border-zinc-800 bg-zinc-100 dark:bg-zinc-950">
                         <td colSpan={6} className="px-4 py-4">
                           <dl className="grid grid-cols-1 gap-4 sm:grid-cols-3">
                             <div>
-                              <dt className="text-xs font-medium uppercase tracking-wider text-zinc-400">
+                              <dt className="text-xs font-medium uppercase tracking-wider text-zinc-600 dark:text-zinc-400">
                                 Tasks completed
                               </dt>
-                              <dd className="mt-1 whitespace-pre-wrap text-sm text-zinc-300">
+                              <dd className="mt-1 whitespace-pre-wrap text-sm text-zinc-700 dark:text-zinc-300">
                                 {report.tasksCompleted}
                               </dd>
                             </div>
                             <div>
-                              <dt className="text-xs font-medium uppercase tracking-wider text-zinc-400">
+                              <dt className="text-xs font-medium uppercase tracking-wider text-zinc-600 dark:text-zinc-400">
                                 Tasks planned
                               </dt>
-                              <dd className="mt-1 whitespace-pre-wrap text-sm text-zinc-300">
+                              <dd className="mt-1 whitespace-pre-wrap text-sm text-zinc-700 dark:text-zinc-300">
                                 {report.tasksPlanned}
                               </dd>
                             </div>
                             <div>
-                              <dt className="text-xs font-medium uppercase tracking-wider text-zinc-400">
+                              <dt className="text-xs font-medium uppercase tracking-wider text-zinc-600 dark:text-zinc-400">
                                 Blockers
                               </dt>
-                              <dd className="mt-1 whitespace-pre-wrap text-sm text-zinc-300">
+                              <dd className="mt-1 whitespace-pre-wrap text-sm text-zinc-700 dark:text-zinc-300">
                                 {report.blockers}
                               </dd>
                             </div>
                           </dl>
                           {report.notesOrLinks && (
-                            <p className="mt-3 text-sm text-zinc-400">
-                              <span className="text-xs font-medium uppercase tracking-wider text-zinc-400">
+                            <p className="mt-3 text-sm text-zinc-600 dark:text-zinc-400">
+                              <span className="text-xs font-medium uppercase tracking-wider text-zinc-600 dark:text-zinc-400">
                                 Notes:{' '}
                               </span>
                               {report.notesOrLinks}

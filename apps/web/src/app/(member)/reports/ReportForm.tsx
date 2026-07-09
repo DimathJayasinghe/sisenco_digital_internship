@@ -21,8 +21,10 @@ export function ReportForm(): ReactNode {
 
   return (
     <div className="mx-auto max-w-2xl px-6 py-12">
-      <h1 className="text-3xl font-bold tracking-tight text-zinc-100">My Weekly Report</h1>
-      <p className="mt-2 text-sm text-zinc-400">
+      <h1 className="text-3xl font-bold tracking-tight text-zinc-900 dark:text-zinc-100">
+        My Weekly Report
+      </h1>
+      <p className="mt-2 text-sm text-zinc-600 dark:text-zinc-400">
         One report per week. Save as a draft as you go, then submit when it&apos;s ready.
       </p>
 
@@ -35,7 +37,9 @@ export function ReportForm(): ReactNode {
           ← Previous week
         </Button>
         <div className="text-center">
-          <p className="text-sm font-medium text-zinc-100">{formatWeekRange(weekStartDate)}</p>
+          <p className="text-sm font-medium text-zinc-900 dark:text-zinc-100">
+            {formatWeekRange(weekStartDate)}
+          </p>
           {existingReport && (
             <Badge variant={existingReport.status} className="mt-1">
               {existingReport.status}
@@ -52,9 +56,9 @@ export function ReportForm(): ReactNode {
       </div>
 
       {isLoading ? (
-        <p className="mt-8 text-sm text-zinc-400">Loading…</p>
+        <p className="mt-8 text-sm text-zinc-600 dark:text-zinc-400">Loading…</p>
       ) : reportsError ? (
-        <p className="mt-8 text-sm text-red-400">
+        <p className="mt-8 text-sm text-red-600 dark:text-red-400">
           Couldn&apos;t load your reports. Try refreshing.
         </p>
       ) : (

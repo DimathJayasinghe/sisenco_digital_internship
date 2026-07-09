@@ -9,14 +9,16 @@ interface BadgeProps extends HTMLAttributes<HTMLSpanElement> {
 }
 
 // AGENTS/UI_UX_DESIGN.md §2 — outlined block badge, transparent background so
-// it reads correctly on both zinc-950 and zinc-900 parents. DRAFT uses the
-// muted zinc-500 border floor (§9) instead of a status color, since it's
-// inactive, not one of the "colored" outcomes.
+// it reads correctly on any surface in either theme. Light-mode status
+// colors run one to two shades darker than dark-mode's (emerald/red/amber-500
+// don't clear 4.5:1 AA text contrast on a light background — 700 does; see
+// §9). DRAFT uses the muted zinc-500 border floor (§9, safe in both themes)
+// instead of a status color, since it's inactive, not a "colored" outcome.
 const VARIANT_CLASSES: Record<BadgeVariant, string> = {
-  SUBMITTED: 'border-emerald-500 text-emerald-400',
-  LATE: 'border-red-500 text-red-400',
-  PENDING: 'border-amber-500 text-amber-400',
-  DRAFT: 'border-zinc-500 text-zinc-400',
+  SUBMITTED: 'border-emerald-700 text-emerald-700 dark:border-emerald-500 dark:text-emerald-400',
+  LATE: 'border-red-700 text-red-700 dark:border-red-500 dark:text-red-400',
+  PENDING: 'border-amber-700 text-amber-700 dark:border-amber-500 dark:text-amber-400',
+  DRAFT: 'border-zinc-500 text-zinc-600 dark:text-zinc-400',
 };
 
 /** Report/submission status badge — AGENTS/UI_UX_DESIGN.md §5. */

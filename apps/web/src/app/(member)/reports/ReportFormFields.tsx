@@ -162,14 +162,16 @@ export function ReportFormFields({
       />
 
       {formError && (
-        <p role="alert" className="text-sm text-red-400">
+        <p role="alert" className="text-sm text-red-600 dark:text-red-400">
           {formError}
         </p>
       )}
-      {saveMessage && <p className="text-sm text-emerald-400">{saveMessage}</p>}
+      {saveMessage && (
+        <p className="text-sm text-emerald-700 dark:text-emerald-400">{saveMessage}</p>
+      )}
 
       {isReadOnly ? (
-        <p className="text-sm text-zinc-400">
+        <p className="text-sm text-zinc-600 dark:text-zinc-400">
           This report was submitted and can no longer be edited.
         </p>
       ) : (
