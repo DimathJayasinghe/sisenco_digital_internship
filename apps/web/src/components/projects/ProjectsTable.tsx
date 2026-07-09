@@ -62,31 +62,36 @@ export function ProjectsTable({ projects, users }: ProjectsTableProps): ReactNod
               No projects match &ldquo;{search}&rdquo;.
             </p>
           ) : (
-            <table className="w-full min-w-[640px] text-sm">
-              <thead className="sticky top-0">
-                <tr className="border-b-2 border-zinc-900 bg-zinc-200 text-xs font-bold uppercase tracking-wider text-zinc-700 dark:border-zinc-300 dark:bg-zinc-700 dark:text-zinc-300">
-                  <th className="w-8 px-4 py-2.5" aria-hidden />
-                  <th className="px-4 py-2.5 text-left">Name</th>
-                  <th className="px-4 py-2.5 text-left">Description</th>
-                  <th className="px-4 py-2.5 text-left">Created</th>
-                  <th className="px-4 py-2.5 text-right">Actions</th>
-                </tr>
-              </thead>
-              <tbody>
-                {filtered.map((project) => (
-                  <ProjectRow
-                    key={project.id}
-                    project={project}
-                    users={users}
-                    isExpanded={expandedId === project.id}
-                    onToggle={() =>
-                      setExpandedId((current) => (current === project.id ? null : project.id))
-                    }
-                    onRequestDelete={() => setDeletingProject(project)}
-                  />
-                ))}
-              </tbody>
-            </table>
+            <>
+              <p className="mb-2 text-xs text-zinc-500 dark:text-zinc-500 sm:hidden">
+                Swipe left for more →
+              </p>
+              <table className="w-full min-w-[640px] text-sm">
+                <thead className="sticky top-0">
+                  <tr className="border-b-2 border-zinc-900 bg-zinc-200 text-xs font-bold uppercase tracking-wider text-zinc-700 dark:border-zinc-300 dark:bg-zinc-700 dark:text-zinc-300">
+                    <th className="w-8 px-4 py-2.5" aria-hidden />
+                    <th className="px-4 py-2.5 text-left">Name</th>
+                    <th className="px-4 py-2.5 text-left">Description</th>
+                    <th className="px-4 py-2.5 text-left">Created</th>
+                    <th className="px-4 py-2.5 text-right">Actions</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  {filtered.map((project) => (
+                    <ProjectRow
+                      key={project.id}
+                      project={project}
+                      users={users}
+                      isExpanded={expandedId === project.id}
+                      onToggle={() =>
+                        setExpandedId((current) => (current === project.id ? null : project.id))
+                      }
+                      onRequestDelete={() => setDeletingProject(project)}
+                    />
+                  ))}
+                </tbody>
+              </table>
+            </>
           )}
         </div>
       </Card>
