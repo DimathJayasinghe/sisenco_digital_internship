@@ -46,15 +46,10 @@ export function ProjectsTable({ projects, users }: ProjectsTableProps): ReactNod
   return (
     <>
       <Card className="mt-4 p-4">
-        <div className="relative max-w-xs">
-          <Search
-            size={16}
-            className="pointer-events-none absolute left-3 top-1/2 -translate-y-1/2 text-zinc-600 dark:text-zinc-400"
-            aria-hidden
-          />
+        <div className="max-w-xs">
           <Input
             label="Search projects"
-            className="pl-9"
+            icon={<Search size={16} />}
             placeholder="Search by name or description…"
             value={search}
             onChange={(event) => setSearch(event.target.value)}

@@ -43,14 +43,10 @@ export function StatusList({ data }: StatusListProps): ReactNode {
       ) : (
         <>
           {data.length > 5 && (
-            <div className="relative mt-3">
-              <Search
-                size={14}
-                className="pointer-events-none absolute left-3 top-1/2 -translate-y-1/2 text-zinc-600 dark:text-zinc-400"
-                aria-hidden
-              />
+            <div className="mt-3">
               <Input
                 label="Search team status"
+                icon={<Search size={14} />}
                 className="py-1.5 pl-8 text-xs"
                 placeholder="Search members…"
                 value={search}
