@@ -26,7 +26,7 @@ const CHART_COLORS = {
     grid: '#3f3f46',
     axis: '#a1a1aa',
     tooltipBg: '#27272a',
-    tooltipBorder: '#f4f4f5',
+    tooltipBorder: '#d4d4d8',
     label: '#f4f4f5',
     bar: '#7c3aed',
   },

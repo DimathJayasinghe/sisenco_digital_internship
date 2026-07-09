@@ -24,10 +24,12 @@ const config: Config = {
         brutal: '4px 4px 0 0 #18181b',
         'brutal-lg': '6px 6px 0 0 #18181b',
         'brutal-sm': '2px 2px 0 0 #18181b',
-        // Dark-mode counterparts (zinc-100 offset) — apply via `dark:shadow-brutal-dark` etc.
-        'brutal-dark': '4px 4px 0 0 #f4f4f5',
-        'brutal-lg-dark': '6px 6px 0 0 #f4f4f5',
-        'brutal-sm-dark': '2px 2px 0 0 #f4f4f5',
+        // Dark-mode counterparts (zinc-300 offset — not pure white; a
+        // near-white/zinc-100 offset read as too harsh/high-contrast against
+        // the dark canvas) — apply via `dark:shadow-brutal-dark` etc.
+        'brutal-dark': '4px 4px 0 0 #d4d4d8',
+        'brutal-lg-dark': '6px 6px 0 0 #d4d4d8',
+        'brutal-sm-dark': '2px 2px 0 0 #d4d4d8',
         // Violet — primary/focus emphasis. Same hex in both themes.
         'brutal-violet': '4px 4px 0 0 #7c3aed',
         'brutal-violet-sm': '2px 2px 0 0 #8b5cf6',

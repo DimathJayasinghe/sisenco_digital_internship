@@ -8,12 +8,14 @@ The frontend delivers a **restrained neo-brutalism, in both light and dark**: a 
 
 **Provenance (dark palette softened):** the dark scale was originally `zinc-950`/`900`/`800` (canvas/surface/raised) — near-black, at the request of a reviewer who found it too harsh. Shifted one step lighter across the board (`zinc-900`/`800`/`700`) after re-verifying every affected contrast pair, not just eyeballing it "looks softer." One real regression turned up from the shift and was fixed: the `DRAFT` badge's muted border (`zinc-500`) cleared 3:1 against the _old_ darkest raised tone but drops to 2.16:1 against the new one — dark mode's muted-border floor is now `zinc-400` (light mode's stays `zinc-500`, unaffected by this change). See §2/§9/§10 for the current numbers.
 
+**Provenance (dark structural border/shadow softened):** the dark-mode structural border and matching `shadow-brutal-dark*` offset were originally `zinc-100` (`#f4f4f5`, near-white) — visually correct for maximum brutalist contrast, but reported as uncomfortable to look at for extended periods: a near-white hairline against a dark canvas is a high-contrast edge the eye keeps re-focusing on. Moved to `zinc-300` (`#d4d4d8`) for every dark-mode structural border, the matching shadow offset, and the two dashboard charts' tooltip border — still reads clearly as "the" border color (12.0:1 / 10.1:1 / 7.1:1 against the canvas/surface/raised tiers, all far above the 3:1 floor) without the glare. Dark mode's `text-zinc-100` (primary heading/body text) is unaffected — this change is scoped to lines (borders and shadows), not text, which has a real 4.5:1 legibility requirement `zinc-100` is there to satisfy.
+
 ---
 
 ## 1. Theme & Aesthetic Philosophy
 
 - **Monochromatic base, one accent.** The zinc scale carries almost the entire UI. Violet is spent deliberately — primary actions, active states, key metrics, focus states — never decoratively. If everything is accented, nothing is.
-- **Depth from borders and hard shadows, not blur.** Every structural surface (cards, buttons, inputs) gets the same `border-2 border-zinc-100` — one consistent line weight and color, applied everywhere, is what makes the system read as _designed_ rather than _decorated_. Elevation comes from an offset, blur-less `shadow-brutal*` (a solid rectangle offset 2-6px, not a soft `shadow-lg`).
+- **Depth from borders and hard shadows, not blur.** Every structural surface (cards, buttons, inputs) gets the same border color per theme (`border-zinc-900` light / `border-zinc-300` dark — **not** pure white/`zinc-100` in dark mode, which reads as glaring/uncomfortable against the dark canvas; see the Provenance note) at `border-2` — one consistent line weight and color, applied everywhere, is what makes the system read as _designed_ rather than _decorated_. Elevation comes from an offset, blur-less `shadow-brutal*` (a solid rectangle offset 2-6px, not a soft `shadow-lg`).
 - **Interactions feel physical.** Primary/secondary/danger buttons "press" on hover: the hard shadow disappears and the element slides into the space the shadow occupied (`hover:translate-x-1 hover:translate-y-1 hover:shadow-none`). This is the signature neo-brutalist affordance — it reads as a physical button being pushed in, not just a color change.
 - **Sharp corners.** `rounded-none` on every structural primitive (cards, buttons, inputs, badges, table cells). This is a deliberate, universal rule, not a per-component choice — a stray `rounded-lg` anywhere breaks the system's coherence immediately.
 - **Density is a deliberate, role-specific choice**, not an accident of not-caring. The Team Member surface is spacious and focused; the Manager surface is dense and information-rich. Neither is "the default" — each is tuned to what that role is doing. See §6. (This is unchanged from the previous system — brutalism is a surface treatment, not a layout philosophy, and the role-density decision still stands.)
@@ -34,7 +36,7 @@ All colors are Tailwind's stock `zinc` and `violet`/`emerald`/`red`/`amber` scal
 | Surface              | `bg-zinc-800`        | `#27272a` | Solid card/widget/input fill — **always solid, never translucent**                                                                                                        |
 | Raised surface       | `bg-zinc-700`        | `#3f3f46` | Table headers, hover state on rows sitting inside a `zinc-800` card                                                                                                       |
 | Recessed surface     | `bg-zinc-900`        | `#18181b` | Form inputs (recessed _into_ the canvas, distinct from raised cards)                                                                                                      |
-| Structural border    | `border-zinc-100`    | `#f4f4f5` | **The one border color used everywhere** — cards, buttons, inputs, badges' neutral state                                                                                  |
+| Structural border    | `border-zinc-300`    | `#d4d4d8` | **The one border color used everywhere** — cards, buttons, inputs, badges' neutral state. Deliberately not `zinc-100`/near-white — see the Provenance note                |
 | Muted border         | `border-zinc-400`    | `#a1a1aa` | Only where a border must be visually de-emphasized (e.g. `DRAFT` badge) but still needs to clear the 3:1 non-text minimum against every surface it can appear on — see §9 |
 | Divider (decorative) | `border-zinc-700`    | `#3f3f46` | Plain row/list dividers that aren't a "component boundary" (not subject to the 3:1 rule)                                                                                  |
 
@@ -95,9 +97,9 @@ All four verified well above the relevant thresholds against the current dark ca
 
 ## 4. Spacing, Depth & Elevation
 
-No blurred `shadow-lg`/`shadow-md` utilities anywhere. Elevation is a **hard, offset, blur-less shadow** — defined once in `tailwind.config.ts` as `shadow-brutal*` tokens — paired with the universal `border-2 border-zinc-100`:
+No blurred `shadow-lg`/`shadow-md` utilities anywhere. Elevation is a **hard, offset, blur-less shadow** — defined once in `tailwind.config.ts` as `shadow-brutal*` tokens — paired with the universal `border-2 border-zinc-300`:
 
-- **Default card:** `bg-zinc-800 border-2 border-zinc-100 shadow-brutal rounded-none` (dark mode — pair with the light-mode equivalent per §10)
+- **Default card:** `bg-zinc-800 border-2 border-zinc-300 shadow-brutal rounded-none` (dark mode — pair with the light-mode equivalent per §10)
 - **Hero/emphasis card:** `shadow-brutal-lg` instead of `shadow-brutal` (bigger offset, more presence)
 - **Primary/focus emphasis:** `shadow-brutal-violet` (same offset, violet instead of zinc-100) — used on the primary button and on focused inputs
 - **Danger emphasis:** `shadow-brutal-red` — the danger button only
@@ -115,23 +117,23 @@ No blurred `shadow-lg`/`shadow-md` utilities anywhere. Elevation is a **hard, of
 
 ### Buttons
 
-- **Primary:** `border-2 border-zinc-100 bg-violet-600 text-white font-medium rounded-none px-4 py-2 shadow-brutal-violet hover:translate-x-1 hover:translate-y-1 hover:shadow-none transition-all`
-- **Secondary:** `border-2 border-zinc-100 bg-zinc-800 text-zinc-100 font-medium rounded-none px-4 py-2 shadow-brutal hover:translate-x-1 hover:translate-y-1 hover:shadow-none transition-all` (dark mode values shown; pair with light per §10)
-- **Ghost:** `border-2 border-transparent text-zinc-400 font-medium rounded-none px-4 py-2 hover:border-zinc-100 hover:bg-zinc-800 hover:text-zinc-100 transition-colors` — flat by default (no shadow), only gains a border on hover; this is what visually distinguishes it from primary/secondary's constant "raised" look, not a color difference
-- **Danger:** `border-2 border-zinc-100 bg-red-600 text-white font-medium rounded-none px-4 py-2 shadow-brutal-red hover:translate-x-1 hover:translate-y-1 hover:shadow-none transition-all` (destructive actions only — deleting a project, etc.)
+- **Primary:** `border-2 border-zinc-300 bg-violet-600 text-white font-medium rounded-none px-4 py-2 shadow-brutal-violet hover:translate-x-1 hover:translate-y-1 hover:shadow-none transition-all`
+- **Secondary:** `border-2 border-zinc-300 bg-zinc-800 text-zinc-100 font-medium rounded-none px-4 py-2 shadow-brutal hover:translate-x-1 hover:translate-y-1 hover:shadow-none transition-all` (dark mode values shown; pair with light per §10)
+- **Ghost:** `border-2 border-transparent text-zinc-400 font-medium rounded-none px-4 py-2 hover:border-zinc-300 hover:bg-zinc-800 hover:text-zinc-100 transition-colors` — flat by default (no shadow), only gains a border on hover; this is what visually distinguishes it from primary/secondary's constant "raised" look, not a color difference
+- **Danger:** `border-2 border-zinc-300 bg-red-600 text-white font-medium rounded-none px-4 py-2 shadow-brutal-red hover:translate-x-1 hover:translate-y-1 hover:shadow-none transition-all` (destructive actions only — deleting a project, etc.)
 - All buttons: `disabled:opacity-40 disabled:cursor-not-allowed disabled:pointer-events-none` — a disabled button keeps its resting shadow (it can't be "pressed"), which correctly reads as unavailable
 - Focus: `focus-visible:ring-2 focus-visible:ring-violet-500 focus-visible:ring-offset-2 focus-visible:ring-offset-zinc-900` — independent of and stacked with the hover-press state
 
 ### Form Inputs
 
-- `bg-zinc-900 border-2 border-zinc-100 rounded-none px-3 py-2 text-sm text-zinc-100 placeholder:text-zinc-500` (dark mode; recessed surface, same tone as canvas)
+- `bg-zinc-900 border-2 border-zinc-300 rounded-none px-3 py-2 text-sm text-zinc-100 placeholder:text-zinc-500` (dark mode; recessed surface, same tone as canvas)
 - Focus: `focus:border-violet-500 focus:shadow-brutal-violet-sm focus:outline-none` — the border swaps color _and_ a small hard shadow appears, a clear "now editing" state change
 - Error: `border-red-500 focus:shadow-brutal-red-sm` with helper text `text-red-400 text-xs mt-1.5` (dark) / `text-red-600` (light)
 - Every input has a visible `<label className="text-sm font-medium text-zinc-300">` — never placeholder-as-label.
 
 ### Cards
 
-- `bg-zinc-800 border-2 border-zinc-100 shadow-brutal rounded-none p-6` (dark mode; member-facing, spacious) or `p-4` (manager-facing, dense — see §6)
+- `bg-zinc-800 border-2 border-zinc-300 shadow-brutal rounded-none p-6` (dark mode; member-facing, spacious) or `p-4` (manager-facing, dense — see §6)
 - Hero/emphasis variant: `shadow-brutal-lg` in place of `shadow-brutal`
 - Card title: `text-base font-bold text-zinc-100`, optionally with a `text-zinc-400 text-sm` subtitle line beneath
 
@@ -141,7 +143,7 @@ No blurred `shadow-lg`/`shadow-md` utilities anywhere. Elevation is a **hard, of
 
 ### Data Tables (Manager Dashboard)
 
-- Header row: `bg-zinc-700 text-zinc-300 text-xs font-bold uppercase tracking-wider border-b-2 border-zinc-100` (dark; the "raised" tier)
+- Header row: `bg-zinc-700 text-zinc-300 text-xs font-bold uppercase tracking-wider border-b-2 border-zinc-300` (dark; the "raised" tier)
 - Rows: `border-b border-zinc-700 hover:bg-zinc-700 text-zinc-200 text-sm transition-colors` (dark)
 - No zebra striping — hover is the only row-differentiation device.
 - Dense padding: `py-2.5 px-4` per cell (see §6 for why manager views run tighter than member views).
@@ -160,9 +162,9 @@ No blurred `shadow-lg`/`shadow-md` utilities anywhere. Elevation is a **hard, of
 
 ### Navigation (Sidebar / Navbar)
 
-- Container: `bg-zinc-900 border-r-2 border-zinc-100` (sidebar, dark) / `border-b-2 border-zinc-100` (top navbar) — canvas tone, pair with light per §10
-- Active link: `bg-violet-600 text-white border-2 border-zinc-100 rounded-none font-medium` — solid fill, not a translucent tint
-- Inactive link: `text-zinc-400 border-2 border-transparent hover:border-zinc-100 hover:bg-zinc-800 hover:text-zinc-100 rounded-none` (dark)
+- Container: `bg-zinc-900 border-r-2 border-zinc-300` (sidebar, dark) / `border-b-2 border-zinc-300` (top navbar) — canvas tone, pair with light per §10
+- Active link: `bg-violet-600 text-white border-2 border-zinc-300 rounded-none font-medium` — solid fill, not a translucent tint
+- Inactive link: `text-zinc-400 border-2 border-transparent hover:border-zinc-300 hover:bg-zinc-800 hover:text-zinc-100 rounded-none` (dark)
 - Sidebar collapses to a hamburger/drawer on `md` and below; the top navbar (member view) stays single-row at every width — see §8 for the specific mobile treatment.
 
 ### Inline Links (prose)
@@ -207,7 +209,7 @@ The dashboard's job is surfacing patterns across the whole team at a glance. Whi
 
 ### Team Member — Personal Report Page
 
-- Top navbar (canvas tone + `border-b-2 border-zinc-100`), full width, single row at every viewport (see §8)
+- Top navbar (canvas tone + `border-b-2 border-zinc-300`), full width, single row at every viewport (see §8)
 - Below it: the centered form per §6
 - Report history renders beneath, organized by week, most recent first
 
@@ -217,7 +219,7 @@ The dashboard's job is surfacing patterns across the whole team at a glance. Whi
 - **Top:** metric cards, `grid-cols-1 md:grid-cols-3`, compliance rate emphasized per §6
 - **Middle:** 2-3 Recharts charts, `grid-cols-1 lg:grid-cols-2` or `lg:grid-cols-3`
 - **Bottom:** filterable data table of all team reports (§5's dense table spec)
-- **Floating chat widget** (bonus, if implemented): bottom-right, surface tone (`bg-zinc-800` dark / `bg-white` light) `border-2 border-zinc-100 shadow-brutal rounded-none`, toggleable
+- **Floating chat widget** (bonus, if implemented): bottom-right, surface tone (`bg-zinc-800` dark / `bg-white` light) `border-2 border-zinc-300 shadow-brutal rounded-none`, toggleable
 
 ---
 
@@ -237,24 +239,24 @@ Every color/border pair in §2 was checked against the actual WCAG 2.1 contrast 
 
 Numbers below are for the current (softened) dark palette — `zinc-900` canvas / `zinc-800` surface / `zinc-700` raised. When the palette shifts, every row here needs re-verifying, not just re-typing with new hex codes (see the Provenance note in §1 — that's exactly the mistake this table exists to prevent).
 
-| Pair                                                                                 | Ratio              | AA body (4.5:1) | AA large/UI (3:1)                                                                   |
-| ------------------------------------------------------------------------------------ | ------------------ | --------------- | ----------------------------------------------------------------------------------- |
-| `zinc-100` text on `zinc-900` canvas                                                 | 16.1:1             | Pass            | Pass                                                                                |
-| `zinc-300` text on `zinc-800` surface                                                | 10.1:1             | Pass            | Pass                                                                                |
-| `zinc-400` text on `zinc-900` canvas                                                 | 6.9:1              | Pass            | Pass                                                                                |
-| `zinc-500` text on `zinc-900` canvas (placeholder only)                              | 3.7:1              | **Fail**        | Pass                                                                                |
-| `violet-400` text on `zinc-900` canvas                                               | ~7:1               | Pass            | Pass                                                                                |
-| `violet-300`/`violet-400` text on `zinc-800` surface                                 | ~8-9:1 / ~6:1      | Pass            | Pass                                                                                |
-| White text on `violet-600` (primary button fill)                                     | 5.7:1              | Pass            | Pass                                                                                |
-| White text on `red-600` (danger button fill)                                         | 4.8:1              | Pass            | Pass                                                                                |
-| **`zinc-100` border on `zinc-900`** (structural border)                              | 16.1:1             | —               | Pass                                                                                |
-| **`zinc-700` border on `zinc-900`**                                                  | 1.9:1              | —               | **Fail** — do not use as a border                                                   |
-| **`zinc-600` border on `zinc-900`**                                                  | ~2.5:1             | —               | **Fail** — do not use as a border                                                   |
-| **`zinc-500` border on `zinc-900` canvas**                                           | 3.7:1              | —               | Pass                                                                                |
-| **`zinc-500` border on `zinc-700` raised** (e.g. a `DRAFT` badge in a hovered row)   | 2.16:1             | —               | **Fail** — this is why dark mode's muted-border floor is `zinc-400`, not `zinc-500` |
-| **`zinc-400` border on `zinc-900`/`zinc-800`/`zinc-700`** (muted border floor, dark) | 6.9 / 5.8 / 4.1:1  | —               | Pass on every surface tier                                                          |
-| `emerald-500` / `red-500` / `amber-500` border on `zinc-900` (badges)                | ~7 / ~4.7 / ~8.3:1 | —               | Pass                                                                                |
-| `violet-500` focus ring on `zinc-900`                                                | ~4.2:1             | —               | Pass                                                                                |
+| Pair                                                                                 | Ratio               | AA body (4.5:1) | AA large/UI (3:1)                                                                   |
+| ------------------------------------------------------------------------------------ | ------------------- | --------------- | ----------------------------------------------------------------------------------- |
+| `zinc-100` text on `zinc-900` canvas                                                 | 16.1:1              | Pass            | Pass                                                                                |
+| `zinc-300` text on `zinc-800` surface                                                | 10.1:1              | Pass            | Pass                                                                                |
+| `zinc-400` text on `zinc-900` canvas                                                 | 6.9:1               | Pass            | Pass                                                                                |
+| `zinc-500` text on `zinc-900` canvas (placeholder only)                              | 3.7:1               | **Fail**        | Pass                                                                                |
+| `violet-400` text on `zinc-900` canvas                                               | ~7:1                | Pass            | Pass                                                                                |
+| `violet-300`/`violet-400` text on `zinc-800` surface                                 | ~8-9:1 / ~6:1       | Pass            | Pass                                                                                |
+| White text on `violet-600` (primary button fill)                                     | 5.7:1               | Pass            | Pass                                                                                |
+| White text on `red-600` (danger button fill)                                         | 4.8:1               | Pass            | Pass                                                                                |
+| **`zinc-300` border on `zinc-900`/`zinc-800`/`zinc-700`** (structural border)        | 12.0 / 10.1 / 7.1:1 | —               | Pass on every surface tier                                                          |
+| **`zinc-700` border on `zinc-900`**                                                  | 1.9:1               | —               | **Fail** — do not use as a border                                                   |
+| **`zinc-600` border on `zinc-900`**                                                  | ~2.5:1              | —               | **Fail** — do not use as a border                                                   |
+| **`zinc-500` border on `zinc-900` canvas**                                           | 3.7:1               | —               | Pass                                                                                |
+| **`zinc-500` border on `zinc-700` raised** (e.g. a `DRAFT` badge in a hovered row)   | 2.16:1              | —               | **Fail** — this is why dark mode's muted-border floor is `zinc-400`, not `zinc-500` |
+| **`zinc-400` border on `zinc-900`/`zinc-800`/`zinc-700`** (muted border floor, dark) | 6.9 / 5.8 / 4.1:1   | —               | Pass on every surface tier                                                          |
+| `emerald-500` / `red-500` / `amber-500` border on `zinc-900` (badges)                | ~7 / ~4.7 / ~8.3:1  | —               | Pass                                                                                |
+| `violet-500` focus ring on `zinc-900`                                                | ~4.2:1              | —               | Pass                                                                                |
 
 **Binding rules that follow directly from this table:**
 
@@ -294,7 +296,7 @@ Same roles as §2, same relationship rules, tonal direction inverted:
 | Surface (cards)                   | `bg-zinc-800`                                          | `bg-white`                             | Always the brightest/cleanest element in either theme                                                                                                                                                                              |
 | Raised (table header, hover tint) | `bg-zinc-700` / `bg-zinc-800`*                         | `bg-zinc-200`                          | *Ghost-button/nav-link hover in dark mode reuses the surface tone (`zinc-800`) rather than the true raised tone (`zinc-700`) — a pre-existing minor inconsistency carried forward unchanged, not introduced by the light-mode work |
 | Recessed (inputs)                 | `bg-zinc-900`                                          | `bg-zinc-100`                          | Same tone as canvas in both themes                                                                                                                                                                                                 |
-| Structural border                 | `border-zinc-100`                                      | `border-zinc-900`                      | The one universal border color, per theme                                                                                                                                                                                          |
+| Structural border                 | `border-zinc-300`                                      | `border-zinc-900`                      | The one universal border color, per theme. Dark mode is deliberately not `zinc-100`/near-white — see Provenance                                                                                                                    |
 | Muted border                      | `border-zinc-400`                                      | `border-zinc-500`                      | **Not the same value in both themes** (see §9) — `zinc-400` in dark (6.9:1 on canvas, 4.1:1 on the lightest raised surface, clears 3:1 everywhere); `zinc-500` in light (4.83:1 on white)                                          |
 | Divider (decorative)              | `border-zinc-700`                                      | `border-zinc-300`                      | Not subject to the 3:1 rule (decorative, not a component boundary)                                                                                                                                                                 |
 | Text primary                      | `text-zinc-100`                                        | `text-zinc-900`                        |                                                                                                                                                                                                                                    |

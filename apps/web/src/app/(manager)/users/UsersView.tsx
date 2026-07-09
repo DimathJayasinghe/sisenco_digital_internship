@@ -38,7 +38,7 @@ export function UsersView(): ReactNode {
         <Card className="mt-4 overflow-x-auto p-4">
           <table className="w-full min-w-[560px] text-sm">
             <thead>
-              <tr className="border-b-2 border-zinc-900 dark:border-zinc-100 bg-zinc-200 dark:bg-zinc-700 text-xs font-bold uppercase tracking-wider text-zinc-700 dark:text-zinc-300">
+              <tr className="border-b-2 border-zinc-900 dark:border-zinc-300 bg-zinc-200 dark:bg-zinc-700 text-xs font-bold uppercase tracking-wider text-zinc-700 dark:text-zinc-300">
                 <th className="px-4 py-2.5 text-left">Name</th>
                 <th className="px-4 py-2.5 text-left">Email</th>
                 <th className="px-4 py-2.5 text-left">Role</th>
@@ -66,7 +66,7 @@ export function UsersView(): ReactNode {
                         )
                       }
                       disabled={updateUser.isPending}
-                      className="max-w-[10rem] rounded-none border-2 border-zinc-900 dark:border-zinc-100 bg-zinc-100 dark:bg-zinc-900 px-3 py-1.5 text-sm text-zinc-900 dark:text-zinc-100 focus:border-violet-500 focus:shadow-brutal-violet-sm focus:outline-none disabled:cursor-not-allowed disabled:opacity-40"
+                      className="max-w-[10rem] rounded-none border-2 border-zinc-900 dark:border-zinc-300 bg-zinc-100 dark:bg-zinc-900 px-3 py-1.5 text-sm text-zinc-900 dark:text-zinc-100 focus:border-violet-500 focus:shadow-brutal-violet-sm focus:outline-none disabled:cursor-not-allowed disabled:opacity-40"
                     >
                       {Object.values(Role).map((role) => (
                         <option key={role} value={role}>

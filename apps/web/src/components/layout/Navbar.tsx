@@ -32,7 +32,7 @@ export function Navbar(): ReactNode {
   }
 
   return (
-    <header className="border-b-2 border-zinc-900 bg-zinc-100 dark:border-zinc-100 dark:bg-zinc-900">
+    <header className="border-b-2 border-zinc-900 bg-zinc-100 dark:border-zinc-300 dark:bg-zinc-900">
       <div className="mx-auto flex h-16 max-w-2xl items-center justify-between gap-2 px-4 sm:px-6">
         <div className="flex items-center gap-3 sm:gap-6">
           <Link
@@ -52,8 +52,8 @@ export function Navbar(): ReactNode {
                   className={cn(
                     'whitespace-nowrap rounded-none border-2 px-2 py-1.5 text-sm font-medium transition-colors sm:px-3',
                     isActive
-                      ? 'border-zinc-900 bg-violet-600 text-white dark:border-zinc-100'
-                      : 'border-transparent text-zinc-600 hover:border-zinc-900 hover:bg-zinc-200 hover:text-zinc-900 dark:text-zinc-400 dark:hover:border-zinc-100 dark:hover:bg-zinc-800 dark:hover:text-zinc-100',
+                      ? 'border-zinc-900 bg-violet-600 text-white dark:border-zinc-300'
+                      : 'border-transparent text-zinc-600 hover:border-zinc-900 hover:bg-zinc-200 hover:text-zinc-900 dark:text-zinc-400 dark:hover:border-zinc-300 dark:hover:bg-zinc-800 dark:hover:text-zinc-100',
                   )}
                 >
                   {link.label}

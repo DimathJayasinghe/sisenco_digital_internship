@@ -14,7 +14,7 @@ export function ThemeToggle(): ReactNode {
       type="button"
       onClick={toggleTheme}
       aria-label={isDark ? 'Switch to light mode' : 'Switch to dark mode'}
-      className="rounded-none border-2 border-transparent p-2 text-zinc-600 transition-colors hover:border-zinc-900 hover:bg-zinc-200 hover:text-zinc-900 dark:text-zinc-400 dark:hover:border-zinc-100 dark:hover:bg-zinc-800 dark:hover:text-zinc-100"
+      className="rounded-none border-2 border-transparent p-2 text-zinc-600 transition-colors hover:border-zinc-900 hover:bg-zinc-200 hover:text-zinc-900 dark:text-zinc-400 dark:hover:border-zinc-300 dark:hover:bg-zinc-800 dark:hover:text-zinc-100"
     >
       {isDark ? <Sun size={18} /> : <Moon size={18} />}
     </button>

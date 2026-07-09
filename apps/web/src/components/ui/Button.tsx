@@ -13,13 +13,13 @@ interface ButtonProps extends ButtonHTMLAttributes<HTMLButtonElement> {
 // lighten contrast question entirely (§9) since no fill color changes.
 const VARIANT_CLASSES: Record<Variant, string> = {
   primary:
-    'border-2 border-zinc-900 dark:border-zinc-100 bg-violet-600 text-white shadow-brutal-violet hover:translate-x-1 hover:translate-y-1 hover:shadow-none',
+    'border-2 border-zinc-900 dark:border-zinc-300 bg-violet-600 text-white shadow-brutal-violet hover:translate-x-1 hover:translate-y-1 hover:shadow-none',
   secondary:
-    'border-2 border-zinc-900 dark:border-zinc-100 bg-white text-zinc-900 dark:bg-zinc-800 dark:text-zinc-100 shadow-brutal dark:shadow-brutal-dark hover:translate-x-1 hover:translate-y-1 hover:shadow-none',
+    'border-2 border-zinc-900 dark:border-zinc-300 bg-white text-zinc-900 dark:bg-zinc-800 dark:text-zinc-100 shadow-brutal dark:shadow-brutal-dark hover:translate-x-1 hover:translate-y-1 hover:shadow-none',
   ghost:
-    'border-2 border-transparent text-zinc-600 dark:text-zinc-400 hover:border-zinc-900 dark:hover:border-zinc-100 hover:bg-zinc-200 dark:hover:bg-zinc-800 hover:text-zinc-900 dark:hover:text-zinc-100',
+    'border-2 border-transparent text-zinc-600 dark:text-zinc-400 hover:border-zinc-900 dark:hover:border-zinc-300 hover:bg-zinc-200 dark:hover:bg-zinc-800 hover:text-zinc-900 dark:hover:text-zinc-100',
   danger:
-    'border-2 border-zinc-900 dark:border-zinc-100 bg-red-600 text-white shadow-brutal-red hover:translate-x-1 hover:translate-y-1 hover:shadow-none',
+    'border-2 border-zinc-900 dark:border-zinc-300 bg-red-600 text-white shadow-brutal-red hover:translate-x-1 hover:translate-y-1 hover:shadow-none',
 };
 
 /**

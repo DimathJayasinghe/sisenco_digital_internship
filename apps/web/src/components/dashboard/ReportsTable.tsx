@@ -90,7 +90,7 @@ export function ReportsTable({ users, projects }: ReportsTableProps): ReactNode 
         ) : (
           <table className="w-full min-w-[640px] text-sm">
             <thead>
-              <tr className="border-b-2 border-zinc-900 dark:border-zinc-100 bg-zinc-200 dark:bg-zinc-700 text-xs font-bold uppercase tracking-wider text-zinc-700 dark:text-zinc-300">
+              <tr className="border-b-2 border-zinc-900 dark:border-zinc-300 bg-zinc-200 dark:bg-zinc-700 text-xs font-bold uppercase tracking-wider text-zinc-700 dark:text-zinc-300">
                 <th className="w-8 px-4 py-2.5" aria-hidden />
                 <th className="px-4 py-2.5 text-left">Member</th>
                 <th className="px-4 py-2.5 text-left">Project</th>

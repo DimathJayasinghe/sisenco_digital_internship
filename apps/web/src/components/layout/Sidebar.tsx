@@ -46,8 +46,8 @@ export function Sidebar(): ReactNode {
             className={cn(
               'rounded-none border-2 px-3 py-2 text-sm font-medium transition-colors',
               isActive
-                ? 'border-zinc-900 bg-violet-600 text-white dark:border-zinc-100'
-                : 'border-transparent text-zinc-600 hover:border-zinc-900 hover:bg-zinc-200 hover:text-zinc-900 dark:text-zinc-400 dark:hover:border-zinc-100 dark:hover:bg-zinc-800 dark:hover:text-zinc-100',
+                ? 'border-zinc-900 bg-violet-600 text-white dark:border-zinc-300'
+                : 'border-transparent text-zinc-600 hover:border-zinc-900 hover:bg-zinc-200 hover:text-zinc-900 dark:text-zinc-400 dark:hover:border-zinc-300 dark:hover:bg-zinc-800 dark:hover:text-zinc-100',
             )}
           >
             {link.label}
@@ -58,7 +58,7 @@ export function Sidebar(): ReactNode {
   );
 
   const accountFooter = (
-    <div className="border-t-2 border-zinc-900 p-4 dark:border-zinc-100">
+    <div className="border-t-2 border-zinc-900 p-4 dark:border-zinc-300">
       {user && (
         <p className="mb-2 truncate text-sm text-zinc-700 dark:text-zinc-300">
           {user.firstName} {user.lastName}
@@ -81,7 +81,7 @@ export function Sidebar(): ReactNode {
   return (
     <>
       {/* Mobile top bar */}
-      <div className="flex items-center justify-between border-b-2 border-zinc-900 bg-zinc-100 px-4 py-3 dark:border-zinc-100 dark:bg-zinc-900 md:hidden">
+      <div className="flex items-center justify-between border-b-2 border-zinc-900 bg-zinc-100 px-4 py-3 dark:border-zinc-300 dark:bg-zinc-900 md:hidden">
         <span className="text-sm font-bold tracking-tight text-zinc-900 dark:text-zinc-100">
           Weekly Reports
         </span>
@@ -91,21 +91,21 @@ export function Sidebar(): ReactNode {
             type="button"
             aria-label={mobileOpen ? 'Close menu' : 'Open menu'}
             onClick={() => setMobileOpen((open) => !open)}
-            className="rounded-none border-2 border-transparent p-2 text-zinc-600 hover:border-zinc-900 hover:bg-zinc-200 hover:text-zinc-900 dark:text-zinc-400 dark:hover:border-zinc-100 dark:hover:bg-zinc-800 dark:hover:text-zinc-100"
+            className="rounded-none border-2 border-transparent p-2 text-zinc-600 hover:border-zinc-900 hover:bg-zinc-200 hover:text-zinc-900 dark:text-zinc-400 dark:hover:border-zinc-300 dark:hover:bg-zinc-800 dark:hover:text-zinc-100"
           >
             {mobileOpen ? <X size={20} /> : <Menu size={20} />}
           </button>
         </div>
       </div>
       {mobileOpen && (
-        <div className="flex flex-col border-b-2 border-zinc-900 bg-zinc-100 dark:border-zinc-100 dark:bg-zinc-900 md:hidden">
+        <div className="flex flex-col border-b-2 border-zinc-900 bg-zinc-100 dark:border-zinc-300 dark:bg-zinc-900 md:hidden">
           {navLinks}
           {accountFooter}
         </div>
       )}
 
       {/* Desktop sidebar */}
-      <aside className="hidden w-56 flex-shrink-0 flex-col border-r-2 border-zinc-900 bg-zinc-100 dark:border-zinc-100 dark:bg-zinc-900 md:flex">
+      <aside className="hidden w-56 flex-shrink-0 flex-col border-r-2 border-zinc-900 bg-zinc-100 dark:border-zinc-300 dark:bg-zinc-900 md:flex">
         <div className="px-4 py-5">
           <span className="text-sm font-bold tracking-tight text-zinc-900 dark:text-zinc-100">
             Weekly Reports

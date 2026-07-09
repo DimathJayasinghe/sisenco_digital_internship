@@ -11,7 +11,7 @@ export function Card({ className, hero = false, ...props }: CardProps): ReactNod
   return (
     <div
       className={cn(
-        'rounded-none border-2 border-zinc-900 bg-white p-6 dark:border-zinc-100 dark:bg-zinc-800',
+        'rounded-none border-2 border-zinc-900 bg-white p-6 dark:border-zinc-300 dark:bg-zinc-800',
         hero
           ? 'shadow-brutal-lg dark:shadow-brutal-lg-dark'
           : 'shadow-brutal dark:shadow-brutal-dark',

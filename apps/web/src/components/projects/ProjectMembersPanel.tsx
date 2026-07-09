@@ -48,7 +48,7 @@ export function ProjectMembersPanel({ projectId, users }: ProjectMembersPanelPro
           {members.map((member) => (
             <li
               key={member.userId}
-              className="flex items-center justify-between rounded-none border-2 border-zinc-900 dark:border-zinc-100 bg-zinc-100 dark:bg-zinc-900 px-3 py-2 text-sm text-zinc-800 dark:text-zinc-200"
+              className="flex items-center justify-between rounded-none border-2 border-zinc-900 dark:border-zinc-300 bg-zinc-100 dark:bg-zinc-900 px-3 py-2 text-sm text-zinc-800 dark:text-zinc-200"
             >
               <span>
                 {member.user.firstName} {member.user.lastName}
