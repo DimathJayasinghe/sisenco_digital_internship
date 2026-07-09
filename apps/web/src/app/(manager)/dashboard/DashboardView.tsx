@@ -50,7 +50,7 @@ export function DashboardView(): ReactNode {
     projects.isError;
 
   if (isLoading) {
-    return <p className="p-6 text-sm text-zinc-400">Loading dashboard…</p>;
+    return <p className="p-6 text-sm text-zinc-600 dark:text-zinc-400">Loading dashboard…</p>;
   }
 
   if (
@@ -64,14 +64,18 @@ export function DashboardView(): ReactNode {
     !projects.data
   ) {
     return (
-      <p className="p-6 text-sm text-red-400">Couldn&apos;t load the dashboard. Try refreshing.</p>
+      <p className="p-6 text-sm text-red-600 dark:text-red-400">
+        Couldn&apos;t load the dashboard. Try refreshing.
+      </p>
     );
   }
 
   return (
     <div className="p-6">
-      <h1 className="text-2xl font-semibold tracking-tight text-zinc-100">Team Dashboard</h1>
-      <p className="mt-1 text-sm text-zinc-400">
+      <h1 className="text-2xl font-bold tracking-tight text-zinc-900 dark:text-zinc-100">
+        Team Dashboard
+      </h1>
+      <p className="mt-1 text-sm text-zinc-600 dark:text-zinc-400">
         This week&apos;s submission activity across the team.
       </p>
 
@@ -88,7 +92,9 @@ export function DashboardView(): ReactNode {
         <MetricCard
           label="Open Blockers"
           value={String(summary.data.openBlockers)}
-          valueClassName={summary.data.openBlockers > 0 ? 'text-amber-400' : undefined}
+          valueClassName={
+            summary.data.openBlockers > 0 ? 'text-amber-700 dark:text-amber-400' : undefined
+          }
         />
       </div>
 

@@ -32,21 +32,23 @@ export function ProjectMembersPanel({ projectId, users }: ProjectMembersPanelPro
 
   return (
     <div>
-      <p className="text-xs font-medium uppercase tracking-wider text-zinc-500">Assigned Members</p>
-      <p className="mt-1 text-xs text-zinc-500">
+      <p className="text-xs font-medium uppercase tracking-wider text-zinc-600 dark:text-zinc-400">
+        Assigned Members
+      </p>
+      <p className="mt-1 text-xs text-zinc-600 dark:text-zinc-400">
         Unrestricted if no members are assigned — any team member can tag reports to this project.
       </p>
 
       {isLoading ? (
-        <p className="mt-3 text-sm text-zinc-400">Loading…</p>
+        <p className="mt-3 text-sm text-zinc-600 dark:text-zinc-400">Loading…</p>
       ) : isError ? (
-        <p className="mt-3 text-sm text-red-400">Couldn&apos;t load members.</p>
+        <p className="mt-3 text-sm text-red-600 dark:text-red-400">Couldn&apos;t load members.</p>
       ) : members && members.length > 0 ? (
         <ul className="mt-3 space-y-2">
           {members.map((member) => (
             <li
               key={member.userId}
-              className="flex items-center justify-between rounded-lg border border-white/10 bg-white/5 px-3 py-2 text-sm text-zinc-200"
+              className="flex items-center justify-between rounded-none border-2 border-zinc-900 dark:border-zinc-300 bg-zinc-100 dark:bg-zinc-900 px-3 py-2 text-sm text-zinc-800 dark:text-zinc-200"
             >
               <span>
                 {member.user.firstName} {member.user.lastName}
@@ -56,7 +58,7 @@ export function ProjectMembersPanel({ projectId, users }: ProjectMembersPanelPro
                 onClick={() => unassignMember.mutate(member.userId)}
                 disabled={unassignMember.isPending}
                 aria-label={`Unassign ${member.user.firstName} ${member.user.lastName}`}
-                className="text-zinc-500 transition-colors hover:text-red-400 disabled:pointer-events-none disabled:opacity-40"
+                className="text-zinc-600 dark:text-zinc-400 transition-colors hover:text-red-600 dark:hover:text-red-400 disabled:pointer-events-none disabled:opacity-40"
               >
                 <X size={16} />
               </button>
@@ -64,7 +66,7 @@ export function ProjectMembersPanel({ projectId, users }: ProjectMembersPanelPro
           ))}
         </ul>
       ) : (
-        <p className="mt-3 text-sm text-zinc-500">No members assigned yet.</p>
+        <p className="mt-3 text-sm text-zinc-600 dark:text-zinc-400">No members assigned yet.</p>
       )}
 
       {assignableUsers.length > 0 && (
@@ -94,7 +96,7 @@ export function ProjectMembersPanel({ projectId, users }: ProjectMembersPanelPro
       )}
 
       {(assignMember.isError || unassignMember.isError) && (
-        <p className="mt-2 text-xs text-red-400">
+        <p className="mt-2 text-xs text-red-600 dark:text-red-400">
           {getApiErrorMessage(assignMember.error ?? unassignMember.error)}
         </p>
       )}

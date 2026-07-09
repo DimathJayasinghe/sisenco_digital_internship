@@ -8,13 +8,20 @@ interface BadgeProps extends HTMLAttributes<HTMLSpanElement> {
   variant: BadgeVariant;
 }
 
-// AGENTS/UI_UX_DESIGN.md §2 — translucent status chip pattern. DRAFT is solid
-// zinc (inactive), not tinted, since it isn't one of the "colored" outcomes.
+// AGENTS/UI_UX_DESIGN.md §2 — outlined block badge, transparent background so
+// it reads correctly on any surface in either theme. Light-mode status
+// colors run one to two shades darker than dark-mode's (emerald/red/amber-500
+// don't clear 4.5:1 AA text contrast on a light background — 700 does; see
+// §9). DRAFT uses a muted border instead of a status color, since it's
+// inactive, not a "colored" outcome — zinc-500 in light (4.83:1 on white,
+// clears the 3:1 non-text minimum) and zinc-400 in dark (zinc-500 only
+// clears 3:1 against the darkest dark-mode surface; against the lighter
+// "raised" tier — e.g. a hovered table row — it drops to 2.16:1 and fails).
 const VARIANT_CLASSES: Record<BadgeVariant, string> = {
-  SUBMITTED: 'border-emerald-500/20 bg-emerald-500/10 text-emerald-400',
-  LATE: 'border-red-500/20 bg-red-500/10 text-red-400',
-  PENDING: 'border-amber-500/20 bg-amber-500/10 text-amber-400',
-  DRAFT: 'border-zinc-700 bg-zinc-800 text-zinc-400',
+  SUBMITTED: 'border-emerald-700 text-emerald-700 dark:border-emerald-500 dark:text-emerald-400',
+  LATE: 'border-red-700 text-red-700 dark:border-red-500 dark:text-red-400',
+  PENDING: 'border-amber-700 text-amber-700 dark:border-amber-500 dark:text-amber-400',
+  DRAFT: 'border-zinc-500 text-zinc-600 dark:border-zinc-400 dark:text-zinc-400',
 };
 
 /** Report/submission status badge — AGENTS/UI_UX_DESIGN.md §5. */
@@ -22,7 +29,7 @@ export function Badge({ variant, className, children, ...props }: BadgeProps): R
   return (
     <span
       className={cn(
-        'inline-flex items-center rounded-full border px-2.5 py-1 text-xs font-medium',
+        'inline-flex items-center rounded-none border-2 bg-transparent px-2 py-0.5 text-[11px] font-bold uppercase tracking-wider',
         VARIANT_CLASSES[variant],
         className,
       )}

@@ -19,8 +19,10 @@ export function ProjectsView(): ReactNode {
     <div className="p-6">
       <div className="flex items-center justify-between">
         <div>
-          <h1 className="text-2xl font-semibold tracking-tight text-zinc-100">Projects</h1>
-          <p className="mt-1 text-sm text-zinc-400">
+          <h1 className="text-2xl font-bold tracking-tight text-zinc-900 dark:text-zinc-100">
+            Projects
+          </h1>
+          <p className="mt-1 text-sm text-zinc-600 dark:text-zinc-400">
             Manage project tags and which members can report against them.
           </p>
         </div>
@@ -35,9 +37,11 @@ export function ProjectsView(): ReactNode {
       )}
 
       {isLoading ? (
-        <p className="mt-6 text-sm text-zinc-400">Loading…</p>
+        <p className="mt-6 text-sm text-zinc-600 dark:text-zinc-400">Loading…</p>
       ) : isError || !projects.data || !users.data ? (
-        <p className="mt-6 text-sm text-red-400">Couldn&apos;t load projects. Try refreshing.</p>
+        <p className="mt-6 text-sm text-red-600 dark:text-red-400">
+          Couldn&apos;t load projects. Try refreshing.
+        </p>
       ) : (
         <ProjectsTable projects={projects.data} users={users.data} />
       )}

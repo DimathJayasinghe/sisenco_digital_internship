@@ -26,7 +26,7 @@ export function NewProjectForm({ onCancel, onCreated }: NewProjectFormProps): Re
   return (
     <Card className="mt-4">
       <form onSubmit={handleSubmit} className="space-y-4">
-        <p className="text-sm font-semibold text-zinc-100">New Project</p>
+        <p className="text-sm font-bold text-zinc-900 dark:text-zinc-100">New Project</p>
         <Input
           label="Name"
           value={name}
@@ -41,7 +41,9 @@ export function NewProjectForm({ onCancel, onCreated }: NewProjectFormProps): Re
           className="min-h-20"
         />
         {createProject.isError && (
-          <p className="text-xs text-red-400">{getApiErrorMessage(createProject.error)}</p>
+          <p className="text-xs text-red-600 dark:text-red-400">
+            {getApiErrorMessage(createProject.error)}
+          </p>
         )}
         <div className="flex justify-end gap-2">
           <Button type="button" variant="ghost" onClick={onCancel}>
