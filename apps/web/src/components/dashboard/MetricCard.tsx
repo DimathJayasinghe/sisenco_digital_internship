@@ -17,8 +17,8 @@ export function MetricCard({
   valueClassName,
 }: MetricCardProps): ReactNode {
   return (
-    <Card className="p-4">
-      <p className="text-xs font-medium uppercase tracking-wider text-zinc-500">{label}</p>
+    <Card className="p-4" hero={hero}>
+      <p className="text-xs font-bold uppercase tracking-wider text-zinc-400">{label}</p>
       <p
         className={cn(
           'mt-2 font-bold tabular-nums tracking-tight',

@@ -8,13 +8,15 @@ interface BadgeProps extends HTMLAttributes<HTMLSpanElement> {
   variant: BadgeVariant;
 }
 
-// AGENTS/UI_UX_DESIGN.md §2 — translucent status chip pattern. DRAFT is solid
-// zinc (inactive), not tinted, since it isn't one of the "colored" outcomes.
+// AGENTS/UI_UX_DESIGN.md §2 — outlined block badge, transparent background so
+// it reads correctly on both zinc-950 and zinc-900 parents. DRAFT uses the
+// muted zinc-500 border floor (§9) instead of a status color, since it's
+// inactive, not one of the "colored" outcomes.
 const VARIANT_CLASSES: Record<BadgeVariant, string> = {
-  SUBMITTED: 'border-emerald-500/20 bg-emerald-500/10 text-emerald-400',
-  LATE: 'border-red-500/20 bg-red-500/10 text-red-400',
-  PENDING: 'border-amber-500/20 bg-amber-500/10 text-amber-400',
-  DRAFT: 'border-zinc-700 bg-zinc-800 text-zinc-400',
+  SUBMITTED: 'border-emerald-500 text-emerald-400',
+  LATE: 'border-red-500 text-red-400',
+  PENDING: 'border-amber-500 text-amber-400',
+  DRAFT: 'border-zinc-500 text-zinc-400',
 };
 
 /** Report/submission status badge — AGENTS/UI_UX_DESIGN.md §5. */
@@ -22,7 +24,7 @@ export function Badge({ variant, className, children, ...props }: BadgeProps): R
   return (
     <span
       className={cn(
-        'inline-flex items-center rounded-full border px-2.5 py-1 text-xs font-medium',
+        'inline-flex items-center rounded-none border-2 bg-transparent px-2 py-0.5 text-[11px] font-bold uppercase tracking-wider',
         VARIANT_CLASSES[variant],
         className,
       )}

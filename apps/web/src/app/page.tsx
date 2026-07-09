@@ -9,9 +9,12 @@ export default function HomePage(): React.ReactNode {
           Submit structured weekly reports · Analyze team activity
         </p>
       </div>
+      {/* Not the Button primitive: an <a> must never wrap a <button> (invalid HTML,
+          double-interactive for a11y) — style the link directly to match Button's
+          primary variant instead. */}
       <Link
         href="/login"
-        className="rounded-lg bg-violet-600 px-4 py-2 font-medium text-white transition-colors hover:bg-violet-700"
+        className="rounded-none border-2 border-zinc-100 bg-violet-600 px-4 py-2 font-medium text-white shadow-brutal-violet transition-all hover:translate-x-1 hover:translate-y-1 hover:shadow-none"
       >
         Sign in
       </Link>

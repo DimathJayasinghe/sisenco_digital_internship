@@ -31,12 +31,12 @@ export function Navbar(): ReactNode {
   }
 
   return (
-    <header className="border-b border-white/10 bg-zinc-950">
+    <header className="border-b-2 border-zinc-100 bg-zinc-950">
       <div className="mx-auto flex h-16 max-w-2xl items-center justify-between gap-2 px-4 sm:px-6">
         <div className="flex items-center gap-3 sm:gap-6">
           <Link
             href="/reports"
-            className="whitespace-nowrap text-sm font-semibold tracking-tight text-zinc-100"
+            className="whitespace-nowrap text-sm font-bold tracking-tight text-zinc-100"
           >
             <span className="sm:hidden">WR</span>
             <span className="hidden sm:inline">Weekly Reports</span>
@@ -49,10 +49,10 @@ export function Navbar(): ReactNode {
                   key={link.href}
                   href={link.href}
                   className={cn(
-                    'whitespace-nowrap rounded-lg px-2 py-1.5 text-sm font-medium transition-colors sm:px-3',
+                    'whitespace-nowrap rounded-none border-2 px-2 py-1.5 text-sm font-medium transition-colors sm:px-3',
                     isActive
-                      ? 'bg-violet-500/10 text-violet-400'
-                      : 'text-zinc-400 hover:bg-white/5 hover:text-zinc-100',
+                      ? 'border-zinc-100 bg-violet-600 text-white'
+                      : 'border-transparent text-zinc-400 hover:border-zinc-100 hover:bg-zinc-900 hover:text-zinc-100',
                   )}
                 >
                   {link.label}

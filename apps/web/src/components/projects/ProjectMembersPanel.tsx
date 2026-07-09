@@ -32,8 +32,8 @@ export function ProjectMembersPanel({ projectId, users }: ProjectMembersPanelPro
 
   return (
     <div>
-      <p className="text-xs font-medium uppercase tracking-wider text-zinc-500">Assigned Members</p>
-      <p className="mt-1 text-xs text-zinc-500">
+      <p className="text-xs font-medium uppercase tracking-wider text-zinc-400">Assigned Members</p>
+      <p className="mt-1 text-xs text-zinc-400">
         Unrestricted if no members are assigned — any team member can tag reports to this project.
       </p>
 
@@ -46,7 +46,7 @@ export function ProjectMembersPanel({ projectId, users }: ProjectMembersPanelPro
           {members.map((member) => (
             <li
               key={member.userId}
-              className="flex items-center justify-between rounded-lg border border-white/10 bg-white/5 px-3 py-2 text-sm text-zinc-200"
+              className="flex items-center justify-between rounded-none border-2 border-zinc-100 bg-zinc-950 px-3 py-2 text-sm text-zinc-200"
             >
               <span>
                 {member.user.firstName} {member.user.lastName}
@@ -56,7 +56,7 @@ export function ProjectMembersPanel({ projectId, users }: ProjectMembersPanelPro
                 onClick={() => unassignMember.mutate(member.userId)}
                 disabled={unassignMember.isPending}
                 aria-label={`Unassign ${member.user.firstName} ${member.user.lastName}`}
-                className="text-zinc-500 transition-colors hover:text-red-400 disabled:pointer-events-none disabled:opacity-40"
+                className="text-zinc-400 transition-colors hover:text-red-400 disabled:pointer-events-none disabled:opacity-40"
               >
                 <X size={16} />
               </button>
@@ -64,7 +64,7 @@ export function ProjectMembersPanel({ projectId, users }: ProjectMembersPanelPro
           ))}
         </ul>
       ) : (
-        <p className="mt-3 text-sm text-zinc-500">No members assigned yet.</p>
+        <p className="mt-3 text-sm text-zinc-400">No members assigned yet.</p>
       )}
 
       {assignableUsers.length > 0 && (

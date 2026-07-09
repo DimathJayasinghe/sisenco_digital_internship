@@ -7,13 +7,19 @@ interface ButtonProps extends ButtonHTMLAttributes<HTMLButtonElement> {
   variant?: Variant;
 }
 
-// AGENTS/UI_UX_DESIGN.md §5. Primary darkens on hover (violet-600 -> 700),
-// never lightens — see §9 for why (violet-500 fails AA contrast for white text).
+// AGENTS/UI_UX_DESIGN.md §5. Primary/secondary/danger "press" on hover: the
+// hard shadow disappears and the element slides into the space it occupied —
+// the signature neo-brutalist affordance, and it sidesteps the darken-vs-
+// lighten contrast question entirely (§9) since no fill color changes.
 const VARIANT_CLASSES: Record<Variant, string> = {
-  primary: 'bg-violet-600 text-white hover:bg-violet-700 active:bg-violet-800',
-  secondary: 'border border-white/10 bg-white/5 text-zinc-100 hover:bg-white/10',
-  ghost: 'text-zinc-400 hover:bg-white/5 hover:text-zinc-100',
-  danger: 'bg-red-600 text-white hover:bg-red-700',
+  primary:
+    'border-2 border-zinc-100 bg-violet-600 text-white shadow-brutal-violet hover:translate-x-1 hover:translate-y-1 hover:shadow-none',
+  secondary:
+    'border-2 border-zinc-100 bg-zinc-900 text-zinc-100 shadow-brutal hover:translate-x-1 hover:translate-y-1 hover:shadow-none',
+  ghost:
+    'border-2 border-transparent text-zinc-400 hover:border-zinc-100 hover:bg-zinc-900 hover:text-zinc-100',
+  danger:
+    'border-2 border-zinc-100 bg-red-600 text-white shadow-brutal-red hover:translate-x-1 hover:translate-y-1 hover:shadow-none',
 };
 
 /**
@@ -29,7 +35,7 @@ export const Button = forwardRef<HTMLButtonElement, ButtonProps>(function Button
       ref={ref}
       type={type}
       className={cn(
-        'rounded-lg px-4 py-2 text-sm font-medium transition-colors focus:outline-none focus-visible:ring-2 focus-visible:ring-violet-500 focus-visible:ring-offset-2 focus-visible:ring-offset-zinc-950 disabled:pointer-events-none disabled:cursor-not-allowed disabled:opacity-40',
+        'rounded-none px-4 py-2 text-sm font-medium transition-all focus:outline-none focus-visible:ring-2 focus-visible:ring-violet-500 focus-visible:ring-offset-2 focus-visible:ring-offset-zinc-950 disabled:pointer-events-none disabled:cursor-not-allowed disabled:opacity-40',
         VARIANT_CLASSES[variant],
         className,
       )}

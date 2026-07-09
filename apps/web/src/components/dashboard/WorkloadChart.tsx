@@ -11,8 +11,8 @@ interface WorkloadChartProps {
 
 const TOOLTIP_STYLE = {
   backgroundColor: '#18181b',
-  border: '1px solid rgba(255,255,255,0.1)',
-  borderRadius: 8,
+  border: '2px solid #f4f4f5',
+  borderRadius: 0,
   fontSize: 13,
 };
 
@@ -20,7 +20,7 @@ const TOOLTIP_STYLE = {
 export function WorkloadChart({ data }: WorkloadChartProps): ReactNode {
   return (
     <Card className="p-4">
-      <p className="text-sm font-semibold text-zinc-100">Workload by Project</p>
+      <p className="text-sm font-bold text-zinc-100">Workload by Project</p>
       <div
         role="img"
         aria-label={`Bar chart of report count by project: ${data
@@ -39,7 +39,7 @@ export function WorkloadChart({ data }: WorkloadChartProps): ReactNode {
               itemStyle={{ color: '#a78bfa' }}
               formatter={(value: number) => [value, 'Reports']}
             />
-            <Bar dataKey="reportCount" name="Reports" fill="#7c3aed" radius={[4, 4, 0, 0]} />
+            <Bar dataKey="reportCount" name="Reports" fill="#7c3aed" />
           </BarChart>
         </ResponsiveContainer>
       </div>

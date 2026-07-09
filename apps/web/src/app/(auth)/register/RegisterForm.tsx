@@ -38,7 +38,7 @@ export function RegisterForm(): ReactNode {
 
   return (
     <Card className="w-full max-w-sm">
-      <h1 className="text-2xl font-semibold tracking-tight text-zinc-100">Create account</h1>
+      <h1 className="text-2xl font-bold tracking-tight text-zinc-100">Create account</h1>
       <p className="mt-1 text-sm text-zinc-400">New accounts start as a team member.</p>
 
       <form onSubmit={handleSubmit} className="mt-6 space-y-5">
@@ -88,7 +88,10 @@ export function RegisterForm(): ReactNode {
 
       <p className="mt-6 text-center text-sm text-zinc-400">
         Already have an account?{' '}
-        <Link href="/login" className="text-violet-400 hover:underline">
+        <Link
+          href="/login"
+          className="text-violet-400 underline decoration-2 underline-offset-2 font-semibold hover:text-violet-300"
+        >
           Sign in
         </Link>
       </p>

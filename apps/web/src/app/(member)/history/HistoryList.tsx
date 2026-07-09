@@ -28,36 +28,36 @@ export function HistoryList(): ReactNode {
         <Card key={report.id}>
           <div className="flex items-start justify-between gap-4">
             <div>
-              <p className="text-sm font-semibold text-zinc-100">
+              <p className="text-sm font-bold text-zinc-100">
                 {formatWeekRange(report.weekStartDate)}
               </p>
-              <p className="mt-0.5 text-xs text-zinc-500">{report.project.name}</p>
+              <p className="mt-0.5 text-xs text-zinc-400">{report.project.name}</p>
             </div>
             <Badge variant={report.status}>{report.status}</Badge>
           </div>
 
           <dl className="mt-4 space-y-3 text-sm">
             <div>
-              <dt className="text-xs font-medium uppercase tracking-wider text-zinc-500">
+              <dt className="text-xs font-medium uppercase tracking-wider text-zinc-400">
                 Tasks completed
               </dt>
               <dd className="mt-1 whitespace-pre-wrap text-zinc-300">{report.tasksCompleted}</dd>
             </div>
             <div>
-              <dt className="text-xs font-medium uppercase tracking-wider text-zinc-500">
+              <dt className="text-xs font-medium uppercase tracking-wider text-zinc-400">
                 Tasks planned
               </dt>
               <dd className="mt-1 whitespace-pre-wrap text-zinc-300">{report.tasksPlanned}</dd>
             </div>
             <div>
-              <dt className="text-xs font-medium uppercase tracking-wider text-zinc-500">
+              <dt className="text-xs font-medium uppercase tracking-wider text-zinc-400">
                 Blockers
               </dt>
               <dd className="mt-1 whitespace-pre-wrap text-zinc-300">{report.blockers}</dd>
             </div>
             {report.hoursWorked !== null && (
               <div>
-                <dt className="text-xs font-medium uppercase tracking-wider text-zinc-500">
+                <dt className="text-xs font-medium uppercase tracking-wider text-zinc-400">
                   Hours worked
                 </dt>
                 <dd className="mt-1 tabular-nums text-zinc-300">{report.hoursWorked}</dd>
@@ -65,7 +65,7 @@ export function HistoryList(): ReactNode {
             )}
             {report.notesOrLinks && (
               <div>
-                <dt className="text-xs font-medium uppercase tracking-wider text-zinc-500">
+                <dt className="text-xs font-medium uppercase tracking-wider text-zinc-400">
                   Notes
                 </dt>
                 <dd className="mt-1 whitespace-pre-wrap text-zinc-300">{report.notesOrLinks}</dd>

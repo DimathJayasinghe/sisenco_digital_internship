@@ -41,7 +41,7 @@ export function ReportsTable({ users, projects }: ReportsTableProps): ReactNode 
 
   return (
     <Card className="p-4">
-      <p className="text-sm font-semibold text-zinc-100">All Team Reports</p>
+      <p className="text-sm font-bold text-zinc-100">All Team Reports</p>
 
       <div className="mt-4 grid grid-cols-1 gap-3 sm:grid-cols-2 lg:grid-cols-4">
         <Select label="Member" value={userId} onChange={(event) => setUserId(event.target.value)}>
@@ -84,11 +84,11 @@ export function ReportsTable({ users, projects }: ReportsTableProps): ReactNode 
         ) : isError ? (
           <p className="py-6 text-sm text-red-400">Couldn&apos;t load reports.</p>
         ) : !reports || reports.length === 0 ? (
-          <p className="py-6 text-sm text-zinc-500">No reports match these filters.</p>
+          <p className="py-6 text-sm text-zinc-400">No reports match these filters.</p>
         ) : (
           <table className="w-full min-w-[640px] text-sm">
             <thead>
-              <tr className="border-b border-white/10 bg-white/5 text-xs font-medium uppercase tracking-wider text-zinc-400">
+              <tr className="border-b-2 border-zinc-100 bg-zinc-800 text-xs font-bold uppercase tracking-wider text-zinc-300">
                 <th className="w-8 px-4 py-2.5" aria-hidden />
                 <th className="px-4 py-2.5 text-left">Member</th>
                 <th className="px-4 py-2.5 text-left">Project</th>
@@ -103,8 +103,8 @@ export function ReportsTable({ users, projects }: ReportsTableProps): ReactNode 
                 const rowLabel = `${report.user.firstName} ${report.user.lastName}, ${report.project.name}, ${formatWeekRange(report.weekStartDate)}`;
                 return (
                   <Fragment key={report.id}>
-                    <tr className="border-b border-white/5 text-zinc-200 transition-colors hover:bg-white/5">
-                      <td className="px-4 py-2.5 text-zinc-500">
+                    <tr className="border-b border-zinc-800 text-zinc-200 transition-colors hover:bg-zinc-800">
+                      <td className="px-4 py-2.5 text-zinc-400">
                         <button
                           type="button"
                           onClick={() => setExpandedId(isExpanded ? null : report.id)}
@@ -130,11 +130,11 @@ export function ReportsTable({ users, projects }: ReportsTableProps): ReactNode 
                       </td>
                     </tr>
                     {isExpanded && (
-                      <tr className="border-b border-white/5 bg-white/[0.02]">
+                      <tr className="border-b border-zinc-800 bg-zinc-950">
                         <td colSpan={6} className="px-4 py-4">
                           <dl className="grid grid-cols-1 gap-4 sm:grid-cols-3">
                             <div>
-                              <dt className="text-xs font-medium uppercase tracking-wider text-zinc-500">
+                              <dt className="text-xs font-medium uppercase tracking-wider text-zinc-400">
                                 Tasks completed
                               </dt>
                               <dd className="mt-1 whitespace-pre-wrap text-sm text-zinc-300">
@@ -142,7 +142,7 @@ export function ReportsTable({ users, projects }: ReportsTableProps): ReactNode 
                               </dd>
                             </div>
                             <div>
-                              <dt className="text-xs font-medium uppercase tracking-wider text-zinc-500">
+                              <dt className="text-xs font-medium uppercase tracking-wider text-zinc-400">
                                 Tasks planned
                               </dt>
                               <dd className="mt-1 whitespace-pre-wrap text-sm text-zinc-300">
@@ -150,7 +150,7 @@ export function ReportsTable({ users, projects }: ReportsTableProps): ReactNode 
                               </dd>
                             </div>
                             <div>
-                              <dt className="text-xs font-medium uppercase tracking-wider text-zinc-500">
+                              <dt className="text-xs font-medium uppercase tracking-wider text-zinc-400">
                                 Blockers
                               </dt>
                               <dd className="mt-1 whitespace-pre-wrap text-sm text-zinc-300">
@@ -160,7 +160,7 @@ export function ReportsTable({ users, projects }: ReportsTableProps): ReactNode 
                           </dl>
                           {report.notesOrLinks && (
                             <p className="mt-3 text-sm text-zinc-400">
-                              <span className="text-xs font-medium uppercase tracking-wider text-zinc-500">
+                              <span className="text-xs font-medium uppercase tracking-wider text-zinc-400">
                                 Notes:{' '}
                               </span>
                               {report.notesOrLinks}

@@ -20,14 +20,14 @@ export function ProjectsTable({ projects, users }: ProjectsTableProps): ReactNod
   const [expandedId, setExpandedId] = useState<string | null>(null);
 
   if (projects.length === 0) {
-    return <p className="py-6 text-sm text-zinc-500">No active projects yet.</p>;
+    return <p className="py-6 text-sm text-zinc-400">No active projects yet.</p>;
   }
 
   return (
     <Card className="mt-4 overflow-x-auto p-4">
       <table className="w-full min-w-[640px] text-sm">
         <thead>
-          <tr className="border-b border-white/10 bg-white/5 text-xs font-medium uppercase tracking-wider text-zinc-400">
+          <tr className="border-b-2 border-zinc-100 bg-zinc-800 text-xs font-bold uppercase tracking-wider text-zinc-300">
             <th className="w-8 px-4 py-2.5" aria-hidden />
             <th className="px-4 py-2.5 text-left">Name</th>
             <th className="px-4 py-2.5 text-left">Description</th>
@@ -83,8 +83,8 @@ function ProjectRow({ project, users, isExpanded, onToggle }: ProjectRowProps): 
 
   return (
     <Fragment>
-      <tr className="border-b border-white/5 text-zinc-200">
-        <td className="px-4 py-2.5 text-zinc-500">
+      <tr className="border-b border-zinc-800 text-zinc-200">
+        <td className="px-4 py-2.5 text-zinc-400">
           <button
             type="button"
             onClick={onToggle}
@@ -131,11 +131,11 @@ function ProjectRow({ project, users, isExpanded, onToggle }: ProjectRowProps): 
         </td>
       </tr>
       {isExpanded && (
-        <tr className="border-b border-white/5 bg-white/[0.02]">
+        <tr className="border-b border-zinc-800 bg-zinc-950">
           <td colSpan={5} className="space-y-6 px-4 py-4">
             {isEditing && (
               <form onSubmit={handleSave} className="space-y-3">
-                <p className="text-xs font-medium uppercase tracking-wider text-zinc-500">
+                <p className="text-xs font-medium uppercase tracking-wider text-zinc-400">
                   Edit Project
                 </p>
                 <Input

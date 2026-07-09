@@ -26,7 +26,7 @@ export function NewProjectForm({ onCancel, onCreated }: NewProjectFormProps): Re
   return (
     <Card className="mt-4">
       <form onSubmit={handleSubmit} className="space-y-4">
-        <p className="text-sm font-semibold text-zinc-100">New Project</p>
+        <p className="text-sm font-bold text-zinc-100">New Project</p>
         <Input
           label="Name"
           value={name}

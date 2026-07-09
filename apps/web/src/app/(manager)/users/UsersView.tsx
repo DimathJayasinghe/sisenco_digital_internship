@@ -23,7 +23,7 @@ export function UsersView(): ReactNode {
 
   return (
     <div className="p-6">
-      <h1 className="text-2xl font-semibold tracking-tight text-zinc-100">Team</h1>
+      <h1 className="text-2xl font-bold tracking-tight text-zinc-100">Team</h1>
       <p className="mt-1 text-sm text-zinc-400">Promote or demote members between roles.</p>
 
       {isLoading ? (
@@ -34,7 +34,7 @@ export function UsersView(): ReactNode {
         <Card className="mt-4 overflow-x-auto p-4">
           <table className="w-full min-w-[560px] text-sm">
             <thead>
-              <tr className="border-b border-white/10 bg-white/5 text-xs font-medium uppercase tracking-wider text-zinc-400">
+              <tr className="border-b-2 border-zinc-100 bg-zinc-800 text-xs font-bold uppercase tracking-wider text-zinc-300">
                 <th className="px-4 py-2.5 text-left">Name</th>
                 <th className="px-4 py-2.5 text-left">Email</th>
                 <th className="px-4 py-2.5 text-left">Role</th>
@@ -42,7 +42,7 @@ export function UsersView(): ReactNode {
             </thead>
             <tbody>
               {users.map((user) => (
-                <tr key={user.id} className="border-b border-white/5 text-zinc-200 last:border-0">
+                <tr key={user.id} className="border-b border-zinc-800 text-zinc-200 last:border-0">
                   <td className="px-4 py-2.5">
                     {user.firstName} {user.lastName}
                   </td>
@@ -59,7 +59,7 @@ export function UsersView(): ReactNode {
                         )
                       }
                       disabled={updateUser.isPending}
-                      className="max-w-[10rem] rounded-lg border border-white/10 bg-white/5 px-3 py-1.5 text-sm text-zinc-100 focus:border-violet-500 focus:outline-none focus:ring-1 focus:ring-violet-500/50 disabled:cursor-not-allowed disabled:opacity-40"
+                      className="max-w-[10rem] rounded-none border-2 border-zinc-100 bg-zinc-950 px-3 py-1.5 text-sm text-zinc-100 focus:border-violet-500 focus:shadow-brutal-violet-sm focus:outline-none disabled:cursor-not-allowed disabled:opacity-40"
                     >
                       {Object.values(Role).map((role) => (
                         <option key={role} value={role}>

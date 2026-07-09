@@ -20,8 +20,8 @@ interface TrendChartProps {
 
 const TOOLTIP_STYLE = {
   backgroundColor: '#18181b',
-  border: '1px solid rgba(255,255,255,0.1)',
-  borderRadius: 8,
+  border: '2px solid #f4f4f5',
+  borderRadius: 0,
   fontSize: 13,
 };
 
@@ -34,7 +34,7 @@ export function TrendChart({ data }: TrendChartProps): ReactNode {
 
   return (
     <Card className="p-4">
-      <p className="text-sm font-semibold text-zinc-100">Reports Submitted Over Time</p>
+      <p className="text-sm font-bold text-zinc-100">Reports Submitted Over Time</p>
       <div
         role="img"
         aria-label={`Line chart of reports submitted per week: ${chartData
