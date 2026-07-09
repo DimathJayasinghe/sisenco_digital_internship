@@ -166,7 +166,7 @@ No blurred `shadow-lg`/`shadow-md` utilities anywhere. Elevation is a **hard, of
 - Container: `bg-zinc-900 border-r-2 border-zinc-300` (sidebar, dark) / `border-b-2 border-zinc-300` (top navbar) — canvas tone, pair with light per §10
 - Active link: `bg-violet-600 text-white border-2 border-zinc-300 rounded-none font-medium` — solid fill, not a translucent tint
 - Inactive link: `text-zinc-400 border-2 border-transparent hover:border-zinc-300 hover:bg-zinc-800 hover:text-zinc-100 rounded-none` (dark)
-- Sidebar collapses to a hamburger/drawer on `md` and below; the top navbar (member view) stays single-row at every width — see §8 for the specific mobile treatment.
+- Sidebar collapses to a hamburger/drawer on `md` and below; the top navbar (member view) collapses to a hamburger panel below `sm` — see §8 for the specific mobile treatment and the bug this replaced.
 - **Desktop sidebar is `sticky top-0 h-screen overflow-y-auto`**, not a plain flex sibling. Without this, the sidebar's flex-stretch height matches whatever `main` renders — a long list (e.g. a large team roster) makes the whole sidebar equally tall, pushing "Sign out" far below the fold and forcing a scroll through all of `main` just to reach it. Sticky + capped-to-viewport keeps the account footer reachable regardless of how tall the page content gets; see also the max-height list pattern below, which is the other half of this fix (shrinking `main`'s content instead of just insulating the sidebar from it).
 
 ### Confirmation Dialogs
@@ -219,7 +219,7 @@ The dashboard's job is surfacing patterns across the whole team at a glance. Whi
 
 ### Team Member — Personal Report Page
 
-- Top navbar (canvas tone + `border-b-2 border-zinc-300`), full width, single row at every viewport (see §8)
+- Top navbar (canvas tone + `border-b-2 border-zinc-300`), full width, single row at `sm` and up, collapsing to a hamburger panel below `sm` (see §8)
 - Below it: the centered form per §6
 - Report history renders beneath, organized by week, most recent first
 
@@ -231,14 +231,18 @@ The dashboard's job is surfacing patterns across the whole team at a glance. Whi
 - **Bottom:** filterable data table of all team reports (§5's dense table spec)
 - **Floating chat widget** (bonus, if implemented): bottom-right, surface tone (`bg-zinc-800` dark / `bg-white` light) `border-2 border-zinc-300 shadow-brutal rounded-none`, toggleable
 
+### Profile Page (shared, both roles)
+
+`/profile` sits outside the `(member)`/`(manager)` route groups — it's the one page both roles reach, so `app/profile/page.tsx` picks its own chrome (`Sidebar` for `MANAGER`, `Navbar` otherwise) based on `useCurrentUser().role` instead of living in either group. Content is two stacked `Card`s in a `max-w-2xl` column: "Your Details" (first/last name, same inline-edit-and-save shape as the Team page's row editor) and "Change Password" (current/new/confirm, client-side match check before the request goes out). Both cards use the same lightweight "Saved" flash-message pattern (a few seconds, no toast system in this app) rather than a persistent success state. Reachable from both `Navbar` and `Sidebar`'s primary nav links, not just a name click — a plain "Profile" link is more discoverable than making the displayed user name a clickable affordance.
+
 ---
 
 ## 8. Responsiveness
 
 - Mobile-first: build the small-screen layout first, expand with `sm:`/`md:`/`lg:`.
 - Manager sidebar collapses to a hamburger drawer at `md` and below.
-- The member top navbar must **never wrap onto multiple lines**, at any supported width — verify this explicitly (a `boundingBox()`/screenshot check, not an assumption) any time a nav item is added. The established pattern for staying on one row at narrow widths: abbreviate the wordmark (`hidden sm:inline` full text / `sm:hidden` short form), tighten gaps and button padding below `sm:`, and keep `whitespace-nowrap` on every nav element.
-- Charts wrapped in `ResponsiveContainer`; tables wrapped in `overflow-x-auto` (the table scrolls internally — the page itself must never gain horizontal scroll).
+- **Member top navbar collapses to a hamburger panel below `sm`.** It used to squeeze every nav item into one row at every width (abbreviated wordmark, tightened gaps, `whitespace-nowrap`) — that held while there were only 2 nav links, but adding a third (`Profile`) overflowed the 375-390px phone widths by ~28px, forcing horizontal page scroll. Verified with an automated check (`document.documentElement.scrollWidth > clientWidth`), not a screenshot glance — the overflow wasn't visually obvious until measured. Fixed the same way `Sidebar` already handled its own mobile case: below `sm`, the row shrinks to wordmark + theme toggle + a `Menu`/`X` hamburger button, and nav links + user name + Sign out move into a collapsible panel beneath. **Any time a nav item is added to `Navbar` or `Sidebar`, re-run the overflow check at a 375-390px viewport** — don't assume the existing breakpoint still has headroom.
+- Charts wrapped in `ResponsiveContainer`; tables wrapped in `overflow-x-auto` (the table scrolls internally — the page itself must never gain horizontal scroll). Below `sm`, a `text-xs text-zinc-500 sm:hidden` "Swipe left for more →" hint sits above any table using this pattern (Team, Projects, All Team Reports) — the horizontal scroll works without it, but nothing else on the page hints that columns are cut off, so it went undiscovered until a mobile screenshot was checked directly rather than just checked for overflow.
 - Member-page spacing (`py-12`, `max-w-2xl`) can compress slightly on mobile (`py-6`) but keeps its single-column, spacious character — density is a manager-view thing, not a mobile-view thing.
 
 ---
@@ -347,3 +351,11 @@ Same binding rule as §9: never eyeball a new light-mode pairing — run it thro
 ### Landing Page
 
 `app/page.tsx` — a marketing/landing page (not the previous minimal "sign in" screen), following this same system: header with the wordmark, `ThemeToggle`, and a sign-in link; a hero section with the primary/secondary CTA pair (create account / sign in) using the same button-press shadow interaction as the `Button` primitive (styled as a plain `<Link>`, per §5's "an `<a>` must never wrap a `<button>`" rule); a three-card feature grid using the `Card` primitive. It is reachable at all times regardless of auth state — it does not redirect a logged-in user away, matching the previous home page's behavior.
+
+**Scroll & pointer effects** (landing page only — not part of the shared component system, since they're specific to a one-time first-impression page):
+
+- **Hero entrance**: pure-CSS `animate-fade-in-up` (a Tailwind keyframe, `tailwind.config.ts`) on mount — no client component needed since it's a one-shot animation tied to page load, not to scroll or pointer state.
+- **Feature-card scroll reveal + pointer shadow**: `components/landing/PointerCard.tsx` wraps each feature `Card`. On first scroll into view (`IntersectionObserver`, `threshold: 0.2`) it fades/translates up, staggered by `index * 100ms`. While hovered, its hard offset shadow tracks the pointer position within the card bounds (offset only, computed from cursor coordinates — no blur, no gradient, stays in the flat brutalist idiom). The shadow color is a CSS custom property (`--pointer-shadow-color`, set via `dark:[--pointer-shadow-color:...]`) so the inline `style.boxShadow` set by JS still resolves to the correct theme color without the component needing to read `.dark` itself.
+- **Scroll-progress bar**: `components/landing/ScrollProgressBar.tsx`, a fixed 1px violet bar at the very top tracking `scrollY / (scrollHeight - innerHeight)`, `rAF`-throttled.
+- **`Card` is `forwardRef`** specifically so `PointerCard` can attach the `IntersectionObserver` target — if a future primitive needs the same treatment, forward the ref rather than wrapping in an extra `<div>`.
+- All of the above check `prefers-reduced-motion: reduce` and skip straight to the end state (visible, no shadow tracking) — verify this with `page.emulateMedia({ reducedMotion: 'reduce' })` in Playwright, not by assumption, any time this code changes.

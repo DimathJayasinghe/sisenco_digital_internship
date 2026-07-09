@@ -76,20 +76,22 @@ In development the API listens on `http://localhost:3001` and the Next.js app on
 
 ### Authentication Endpoints
 
-| Method | Endpoint                | Access        | Description                                                                                                              |
-| ------ | ----------------------- | ------------- | ------------------------------------------------------------------------------------------------------------------------ |
-| POST   | `/api/v1/auth/register` | Public        | Register new user — **always assigned `TEAM_MEMBER`** (client-supplied role is ignored; see `SECURITY_GUIDELINES.md §2`) |
-| POST   | `/api/v1/auth/login`    | Public        | Login, returns HttpOnly cookie                                                                                           |
-| POST   | `/api/v1/auth/logout`   | Authenticated | Clears auth cookie                                                                                                       |
-| GET    | `/api/v1/auth/me`       | Authenticated | Returns current user profile                                                                                             |
+| Method | Endpoint                       | Access        | Description                                                                                                              |
+| ------ | ------------------------------ | ------------- | ------------------------------------------------------------------------------------------------------------------------ |
+| POST   | `/api/v1/auth/register`        | Public        | Register new user — **always assigned `TEAM_MEMBER`** (client-supplied role is ignored; see `SECURITY_GUIDELINES.md §2`) |
+| POST   | `/api/v1/auth/login`           | Public        | Login, returns HttpOnly cookie                                                                                           |
+| POST   | `/api/v1/auth/logout`          | Authenticated | Clears auth cookie                                                                                                       |
+| GET    | `/api/v1/auth/me`              | Authenticated | Returns current user profile                                                                                             |
+| PATCH  | `/api/v1/auth/change-password` | Authenticated | Change own password (requires current password, bcrypt-verified) — same throttle tier as login/register                  |
 
 ### Users Endpoints
 
-| Method | Endpoint            | Access  | Description                    |
-| ------ | ------------------- | ------- | ------------------------------ |
-| GET    | `/api/v1/users`     | Manager | List all users                 |
-| GET    | `/api/v1/users/:id` | Manager | Get specific user              |
-| PATCH  | `/api/v1/users/:id` | Manager | Update user (e.g. assign role) |
+| Method | Endpoint            | Access        | Description                                                                                         |
+| ------ | ------------------- | ------------- | --------------------------------------------------------------------------------------------------- |
+| GET    | `/api/v1/users`     | Manager       | List all users                                                                                      |
+| GET    | `/api/v1/users/:id` | Manager       | Get specific user                                                                                   |
+| PATCH  | `/api/v1/users/:id` | Manager       | Update user (e.g. assign role)                                                                      |
+| PATCH  | `/api/v1/users/me`  | Authenticated | Update own name — no `role` field, self-promotion is impossible (`forbidNonWhitelisted` rejects it) |
 
 ### Reports Endpoints
 
