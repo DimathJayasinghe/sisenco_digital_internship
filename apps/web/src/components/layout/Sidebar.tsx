@@ -104,8 +104,11 @@ export function Sidebar(): ReactNode {
         </div>
       )}
 
-      {/* Desktop sidebar */}
-      <aside className="hidden w-56 flex-shrink-0 flex-col border-r-2 border-zinc-900 bg-zinc-100 dark:border-zinc-300 dark:bg-zinc-900 md:flex">
+      {/* Desktop sidebar — sticky + capped to the viewport height so "Sign
+          out" stays reachable without scrolling past a long main-content
+          list (e.g. a large team roster); the sidebar scrolls internally on
+          its own if its own content ever overflows. */}
+      <aside className="hidden w-56 flex-shrink-0 flex-col border-r-2 border-zinc-900 bg-zinc-100 dark:border-zinc-300 dark:bg-zinc-900 md:sticky md:top-0 md:flex md:h-screen md:overflow-y-auto">
         <div className="px-4 py-5">
           <span className="text-sm font-bold tracking-tight text-zinc-900 dark:text-zinc-100">
             Weekly Reports

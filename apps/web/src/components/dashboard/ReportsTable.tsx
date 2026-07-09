@@ -78,7 +78,7 @@ export function ReportsTable({ users, projects }: ReportsTableProps): ReactNode 
         />
       </div>
 
-      <div className="mt-4 overflow-x-auto">
+      <div className="mt-4 max-h-[32rem] overflow-y-auto overflow-x-auto">
         {isLoading ? (
           <p className="py-6 text-sm text-zinc-600 dark:text-zinc-400">Loading…</p>
         ) : isError ? (
@@ -89,7 +89,7 @@ export function ReportsTable({ users, projects }: ReportsTableProps): ReactNode 
           </p>
         ) : (
           <table className="w-full min-w-[640px] text-sm">
-            <thead>
+            <thead className="sticky top-0">
               <tr className="border-b-2 border-zinc-900 dark:border-zinc-300 bg-zinc-200 dark:bg-zinc-700 text-xs font-bold uppercase tracking-wider text-zinc-700 dark:text-zinc-300">
                 <th className="w-8 px-4 py-2.5" aria-hidden />
                 <th className="px-4 py-2.5 text-left">Member</th>

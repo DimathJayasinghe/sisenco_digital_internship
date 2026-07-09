@@ -61,13 +61,13 @@ export default function HomePage(): React.ReactNode {
                 match Button's primary/secondary variants instead. */}
             <Link
               href="/register"
-              className="rounded-none border-2 border-zinc-900 bg-violet-600 px-4 py-2 font-medium text-white shadow-brutal transition-all hover:translate-x-1 hover:translate-y-1 hover:shadow-none dark:border-zinc-300 dark:shadow-brutal-dark"
+              className="rounded-none border-2 border-zinc-900 bg-violet-600 px-4 py-2 font-medium text-white shadow-brutal-violet transition-all hover:translate-x-1 hover:translate-y-1 hover:shadow-none dark:border-zinc-300"
             >
               Create an account
             </Link>
             <Link
               href="/login"
-              className="rounded-none border-2 border-zinc-900 bg-white px-4 py-2 font-medium text-zinc-900 shadow-brutal transition-all hover:translate-x-1 hover:translate-y-1 hover:shadow-none dark:border-zinc-300 dark:bg-zinc-800 dark:text-zinc-100 dark:shadow-brutal-dark"
+              className="rounded-none border-2 border-zinc-900 bg-white px-4 py-2 font-medium text-zinc-900 shadow-brutal transition-all hover:translate-x-1 hover:translate-y-1 hover:shadow-none dark:border-zinc-300 dark:bg-zinc-800 dark:text-zinc-100 dark:shadow-brutal-dark dark:hover:shadow-none"
             >
               Sign in
             </Link>

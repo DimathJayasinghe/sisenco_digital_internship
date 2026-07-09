@@ -123,6 +123,7 @@ No blurred `shadow-lg`/`shadow-md` utilities anywhere. Elevation is a **hard, of
 - **Danger:** `border-2 border-zinc-300 bg-red-600 text-white font-medium rounded-none px-4 py-2 shadow-brutal-red hover:translate-x-1 hover:translate-y-1 hover:shadow-none transition-all` (destructive actions only — deleting a project, etc.)
 - All buttons: `disabled:opacity-40 disabled:cursor-not-allowed disabled:pointer-events-none` — a disabled button keeps its resting shadow (it can't be "pressed"), which correctly reads as unavailable
 - Focus: `focus-visible:ring-2 focus-visible:ring-violet-500 focus-visible:ring-offset-2 focus-visible:ring-offset-zinc-900` — independent of and stacked with the hover-press state
+- **Bug pattern to never repeat:** any variant with a `dark:shadow-brutal*-dark` base shadow needs an explicit `dark:hover:shadow-none` alongside the plain `hover:shadow-none` — the two are separate, equal-specificity selectors, and `dark:shadow-brutal-dark` was winning in dark mode (the shadow never cleared, so the press animation silently did nothing). This shipped and went unnoticed until reported — verify hover state changes with a computed-style check (`getComputedStyle(el).boxShadow` before/after `.hover()`), not just a visual glance, since a "the button still looks like a button" screenshot won't catch a state transition that never fires. Same rule applies to any hand-styled `<Link>` copying this pattern (see the landing page and unauthorized-page CTAs).
 
 ### Form Inputs
 
@@ -166,6 +167,15 @@ No blurred `shadow-lg`/`shadow-md` utilities anywhere. Elevation is a **hard, of
 - Active link: `bg-violet-600 text-white border-2 border-zinc-300 rounded-none font-medium` — solid fill, not a translucent tint
 - Inactive link: `text-zinc-400 border-2 border-transparent hover:border-zinc-300 hover:bg-zinc-800 hover:text-zinc-100 rounded-none` (dark)
 - Sidebar collapses to a hamburger/drawer on `md` and below; the top navbar (member view) stays single-row at every width — see §8 for the specific mobile treatment.
+- **Desktop sidebar is `sticky top-0 h-screen overflow-y-auto`**, not a plain flex sibling. Without this, the sidebar's flex-stretch height matches whatever `main` renders — a long list (e.g. a large team roster) makes the whole sidebar equally tall, pushing "Sign out" far below the fold and forcing a scroll through all of `main` just to reach it. Sticky + capped-to-viewport keeps the account footer reachable regardless of how tall the page content gets; see also the max-height list pattern below, which is the other half of this fix (shrinking `main`'s content instead of just insulating the sidebar from it).
+
+### Confirmation Dialogs
+
+Native `window.confirm()` is never used — it can't be themed and looks like a bug against the rest of the system. `components/ui/ConfirmDialog.tsx` is the one confirmation surface: a dim `bg-zinc-950/60` scrim (`fixed inset-0`, universal across themes — a scrim isn't a structural surface, so it's exempt from the "no translucency" rule) behind a centered `Card`-style panel (`border-2`, `shadow-brutal-lg`, sharp corners, both themes). Cancel is `ghost`; Confirm is `danger` for destructive actions (delete, role change) and `primary` otherwise. Escape and a backdrop click both cancel; the confirm button auto-focuses on open. Used for: deleting a project, changing a user's role — anything consequential enough that an accidental click needs a second step, without dropping out of the app's visual language to ask.
+
+### Search / Filter Inputs
+
+Any list that can realistically grow past a screenful (team roster, project list, per-member dashboard status) gets a search box above it — the `Input` primitive with a `lucide-react` `Search` icon absolutely positioned inside it (`pl-9` on the input to clear the icon), filtering client-side on whatever's already loaded. Paired with a capped list height (`max-h-72` for compact dashboard widgets, `max-h-[32rem]` for full data tables) and `overflow-y-auto` so a long, unfiltered list scrolls inside its own `Card` instead of stretching the whole page — this is the other half of the sidebar fix above. Table headers use `sticky top-0` inside the scrollable container so column labels stay visible while scrolling.
 
 ### Inline Links (prose)
 

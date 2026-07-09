@@ -16,7 +16,7 @@ export default function UnauthorizedPage(): React.ReactNode {
           secondary variant instead. */}
       <Link
         href="/reports"
-        className="rounded-none border-2 border-zinc-900 bg-white px-4 py-2 text-sm font-medium text-zinc-900 shadow-brutal transition-all hover:translate-x-1 hover:translate-y-1 hover:shadow-none dark:border-zinc-300 dark:bg-zinc-800 dark:text-zinc-100 dark:shadow-brutal-dark"
+        className="rounded-none border-2 border-zinc-900 bg-white px-4 py-2 text-sm font-medium text-zinc-900 shadow-brutal transition-all hover:translate-x-1 hover:translate-y-1 hover:shadow-none dark:border-zinc-300 dark:bg-zinc-800 dark:text-zinc-100 dark:shadow-brutal-dark dark:hover:shadow-none"
       >
         Back to my reports
       </Link>
