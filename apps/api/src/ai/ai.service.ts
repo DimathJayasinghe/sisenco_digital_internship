@@ -15,10 +15,11 @@ import { GEMINI_MODEL } from './ai.constants';
 const SUBMITTED_OR_LATE = [PrismaReportStatus.SUBMITTED, PrismaReportStatus.LATE];
 
 /**
- * Chat assistant over the team's report data (bonus module,
- * ARCHITECTURE.md §6). Privacy note: report content (tasks, blockers,
- * hours — never credentials or raw user IDs) is sent to Google's Gemini
- * API as context on every chat request; see SECURITY_GUIDELINES.md.
+ * Chat assistant over the team's roster, projects, and report data (bonus
+ * module, ARCHITECTURE.md §6). Privacy note: team member names/roles,
+ * project names/status, and report content (tasks, blockers, hours) are
+ * sent to Google's Gemini API as context on every chat request — never
+ * credentials, emails, or raw database IDs. See SECURITY_GUIDELINES.md.
  */
 @Injectable()
 export class AiService {
@@ -40,7 +41,12 @@ export class AiService {
       );
     }
 
-    const context = await this.buildReportContext();
+    const [roster, projects, reportContext] = await Promise.all([
+      this.buildRosterContext(),
+      this.buildProjectContext(),
+      this.buildReportContext(),
+    ]);
+    const context = [roster, projects, reportContext].join('\n\n');
 
     try {
       const response = await this.client.models.generateContent({
@@ -57,6 +63,27 @@ export class AiService {
       this.logger.error('Gemini generateContent call failed', error);
       throw new BadGatewayException('The AI assistant could not be reached — try again shortly.');
     }
+  }
+
+  /** Every user's name and role — lets the assistant answer "who is a manager" style questions. */
+  private async buildRosterContext(): Promise<string> {
+    const users = await this.prisma.user.findMany({
+      include: { role: true },
+      orderBy: [{ role: { name: 'asc' } }, { firstName: 'asc' }],
+    });
+
+    const lines = users.map((user) => `- ${user.firstName} ${user.lastName} — ${user.role.name}`);
+    return `Team roster (${users.length} members):\n${lines.join('\n')}`;
+  }
+
+  /** Every project's name and active/archived status. */
+  private async buildProjectContext(): Promise<string> {
+    const projects = await this.prisma.project.findMany({ orderBy: { name: 'asc' } });
+
+    const lines = projects.map(
+      (project) => `- ${project.name} (${project.isActive ? 'active' : 'archived'})`,
+    );
+    return `Projects:\n${lines.join('\n')}`;
   }
 
   /** Submitted/late reports for the current week, falling back to the most recent week with any. */
@@ -106,7 +133,9 @@ export class AiService {
   private buildSystemInstruction(context: string): string {
     return [
       'You are an assistant for a manager using a weekly team-report dashboard.',
-      'Answer questions using only the report context provided below — do not invent',
+      'You can answer questions about the team roster (names, roles), the list of',
+      'projects (active/archived), and submitted weekly reports (tasks, blockers,',
+      'hours, status). Answer using only the context provided below — do not invent',
       'information about team members, projects, or reports that are not present.',
       'If the context does not contain enough information to answer, say so plainly.',
       '',
