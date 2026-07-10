@@ -1,8 +1,13 @@
 import { Module } from '@nestjs/common';
+import { AiController } from './ai.controller';
+import { AiService } from './ai.service';
 
 /**
- * AiModule (bonus) — Anthropic Claude chat assistant over report context.
- * Implemented in the AI phase.
+ * AiModule (bonus) — Gemini-backed chat assistant that answers a manager's
+ * questions using the current/recent week's submitted report data as context.
  */
-@Module({})
+@Module({
+  controllers: [AiController],
+  providers: [AiService],
+})
 export class AiModule {}
