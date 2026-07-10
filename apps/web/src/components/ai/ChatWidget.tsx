@@ -2,6 +2,7 @@
 
 import { MessageCircle, Send, X } from 'lucide-react';
 import { useEffect, useRef, useState, type FormEvent, type ReactNode } from 'react';
+import ReactMarkdown, { type Components } from 'react-markdown';
 import { Button } from '@/components/ui/Button';
 import { Input } from '@/components/ui/Input';
 import { useAiChat } from '@/hooks/useAi';
@@ -12,6 +13,22 @@ interface ChatEntry {
   role: 'user' | 'assistant';
   content: string;
 }
+
+// Gemini replies use plain markdown (bold, bullet/numbered lists) — render it
+// instead of showing literal "**"/"*" characters. Structure only, no color
+// overrides, so bubbles keep inheriting the text color set on their wrapper.
+const markdownComponents: Components = {
+  p: ({ children }) => <p className="mb-2 last:mb-0">{children}</p>,
+  strong: ({ children }) => <strong className="font-bold">{children}</strong>,
+  ul: ({ children }) => <ul className="mb-2 list-disc space-y-1 pl-4 last:mb-0">{children}</ul>,
+  ol: ({ children }) => <ol className="mb-2 list-decimal space-y-1 pl-4 last:mb-0">{children}</ol>,
+  li: ({ children }) => <li>{children}</li>,
+  a: ({ children, href }) => (
+    <a href={href} target="_blank" rel="noreferrer" className="underline">
+      {children}
+    </a>
+  ),
+};
 
 /**
  * Floating chat widget — AGENTS/UI_UX_DESIGN.md §7 ("bottom-right, surface
@@ -81,13 +98,17 @@ export function ChatWidget(): ReactNode {
                 <div
                   key={index}
                   className={cn(
-                    'max-w-[85%] whitespace-pre-wrap border-2 px-3 py-2 text-sm',
+                    'max-w-[85%] border-2 px-3 py-2 text-sm',
                     entry.role === 'user'
-                      ? 'ml-auto border-zinc-900 bg-violet-600 text-white dark:border-zinc-300'
+                      ? 'ml-auto whitespace-pre-wrap border-zinc-900 bg-violet-600 text-white dark:border-zinc-300'
                       : 'border-zinc-900 bg-zinc-100 text-zinc-800 dark:border-zinc-300 dark:bg-zinc-900 dark:text-zinc-200',
                   )}
                 >
-                  {entry.content}
+                  {entry.role === 'assistant' ? (
+                    <ReactMarkdown components={markdownComponents}>{entry.content}</ReactMarkdown>
+                  ) : (
+                    entry.content
+                  )}
                 </div>
               ))
             )}
