@@ -12,6 +12,12 @@ WORKDIR /repo
 # builder — install, build shared-types, then `next build` (standalone).
 # ─────────────────────────────────────────────────────────────
 FROM base AS builder
+# next.config.mjs's rewrites() destination is resolved once by `next build`
+# and frozen into .next/routes-manifest.json — the standalone server does not
+# re-read it at runtime. So API_URL must be a build arg, not just a runtime
+# `environment:` entry in docker-compose.yml (which has no effect on it).
+ARG API_URL=http://api:3001
+ENV API_URL=$API_URL
 COPY package.json package-lock.json turbo.json tsconfig.base.json ./
 COPY apps/api/package.json apps/api/
 COPY apps/web/package.json apps/web/

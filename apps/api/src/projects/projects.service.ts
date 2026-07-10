@@ -44,6 +44,16 @@ export class ProjectsService {
     return toProjectDto(project);
   }
 
+  async findMembers(projectId: string): Promise<ProjectMember[]> {
+    await this.findByIdOrThrow(projectId);
+    const members = await this.prisma.userProject.findMany({
+      where: { projectId },
+      include: { user: true },
+      orderBy: { assignedAt: 'asc' },
+    });
+    return members.map(toProjectMemberDto);
+  }
+
   /** Optional feature (ARCHITECTURE.md §3) — restricts which projects a member can report on. */
   async assignMember(projectId: string, dto: AssignMemberDto): Promise<ProjectMember> {
     await this.findByIdOrThrow(projectId);

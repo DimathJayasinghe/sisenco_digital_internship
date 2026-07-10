@@ -1,4 +1,9 @@
-import { ConflictException, Injectable, UnauthorizedException } from '@nestjs/common';
+import {
+  BadRequestException,
+  ConflictException,
+  Injectable,
+  UnauthorizedException,
+} from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
 import { JwtService } from '@nestjs/jwt';
 import { AuthUser, Role, User } from '@sisenco/shared-types';
@@ -6,6 +11,7 @@ import * as bcrypt from 'bcrypt';
 import { toSafeUser } from '../common/mappers';
 import { PrismaService } from '../common/prisma/prisma.service';
 import { BCRYPT_ROUNDS } from './auth.constants';
+import { ChangePasswordDto } from './dto/change-password.dto';
 import { LoginDto } from './dto/login.dto';
 import { RegisterDto } from './dto/register.dto';
 import { JwtPayload } from './interfaces/jwt-payload.interface';
@@ -81,6 +87,22 @@ export class AuthService {
     }
 
     return toSafeUser(user);
+  }
+
+  /** Changes the authenticated principal's password after verifying the current one. */
+  async changePassword(userId: string, dto: ChangePasswordDto): Promise<void> {
+    const user = await this.prisma.user.findUniqueOrThrow({ where: { id: userId } });
+
+    const isMatch = await bcrypt.compare(dto.currentPassword, user.passwordHash);
+    if (!isMatch) {
+      throw new UnauthorizedException('Current password is incorrect');
+    }
+    if (dto.currentPassword === dto.newPassword) {
+      throw new BadRequestException('New password must be different from the current password');
+    }
+
+    const passwordHash = await bcrypt.hash(dto.newPassword, BCRYPT_ROUNDS);
+    await this.prisma.user.update({ where: { id: userId }, data: { passwordHash } });
   }
 
   /** Signs a new access token for `user` and sizes a cookie maxAge to match its expiry. */
