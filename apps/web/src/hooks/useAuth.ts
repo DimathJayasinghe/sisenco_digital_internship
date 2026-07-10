@@ -34,6 +34,10 @@ export function useRegister() {
   });
 }
 
+export function useChangePassword() {
+  return useMutation({ mutationFn: authApi.changePassword });
+}
+
 export function useLogout() {
   const queryClient = useQueryClient();
   return useMutation({

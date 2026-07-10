@@ -3,6 +3,7 @@ import { Prisma } from '@prisma/client';
 import { User } from '@sisenco/shared-types';
 import { toSafeUser } from '../common/mappers';
 import { PrismaService } from '../common/prisma/prisma.service';
+import { UpdateProfileDto } from './dto/update-profile.dto';
 import { UpdateUserDto } from './dto/update-user.dto';
 
 @Injectable()
@@ -44,6 +45,19 @@ export class UsersService {
     const updated = await this.prisma.user.update({
       where: { id },
       data,
+      include: { role: true },
+    });
+    return toSafeUser(updated);
+  }
+
+  /** Self-service name update for the authenticated principal — never touches role. */
+  async updateProfile(userId: string, dto: UpdateProfileDto): Promise<User> {
+    const updated = await this.prisma.user.update({
+      where: { id: userId },
+      data: {
+        ...(dto.firstName !== undefined && { firstName: dto.firstName }),
+        ...(dto.lastName !== undefined && { lastName: dto.lastName }),
+      },
       include: { role: true },
     });
     return toSafeUser(updated);

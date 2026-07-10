@@ -1,9 +1,6 @@
 import { RegisterForm } from './RegisterForm';
 
+// Page chrome (brand panel, Back link) lives in the shared (auth)/layout.tsx.
 export default function RegisterPage(): React.ReactNode {
-  return (
-    <main className="flex min-h-screen items-center justify-center bg-zinc-100 p-8 dark:bg-zinc-900">
-      <RegisterForm />
-    </main>
-  );
+  return <RegisterForm />;
 }

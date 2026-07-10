@@ -78,33 +78,38 @@ export function UsersView(): ReactNode {
                 No team members match &ldquo;{search}&rdquo;.
               </p>
             ) : (
-              <table className="w-full min-w-[640px] text-sm">
-                <thead className="sticky top-0">
-                  <tr className="border-b-2 border-zinc-900 bg-zinc-200 text-xs font-bold uppercase tracking-wider text-zinc-700 dark:border-zinc-300 dark:bg-zinc-700 dark:text-zinc-300">
-                    <th className="px-4 py-2.5 text-left">Name</th>
-                    <th className="px-4 py-2.5 text-left">Email</th>
-                    <th className="px-4 py-2.5 text-left">Role</th>
-                    <th className="px-4 py-2.5 text-right">Actions</th>
-                  </tr>
-                </thead>
-                <tbody>
-                  {filtered.map((user) => (
-                    <UserRow
-                      key={user.id}
-                      user={user}
-                      isEditing={editingId === user.id}
-                      onToggleEdit={() =>
-                        setEditingId((current) => (current === user.id ? null : user.id))
-                      }
-                      onCloseEdit={() => setEditingId(null)}
-                      onRequestRoleChange={(nextRole) => setPendingRoleChange({ user, nextRole })}
-                      roleChangePending={
-                        updateUser.isPending && pendingRoleChange?.user.id === user.id
-                      }
-                    />
-                  ))}
-                </tbody>
-              </table>
+              <>
+                <p className="mb-2 text-xs text-zinc-500 dark:text-zinc-500 sm:hidden">
+                  Swipe left for more →
+                </p>
+                <table className="w-full min-w-[640px] text-sm">
+                  <thead className="sticky top-0">
+                    <tr className="border-b-2 border-zinc-900 bg-zinc-200 text-xs font-bold uppercase tracking-wider text-zinc-700 dark:border-zinc-300 dark:bg-zinc-700 dark:text-zinc-300">
+                      <th className="px-4 py-2.5 text-left">Name</th>
+                      <th className="px-4 py-2.5 text-left">Email</th>
+                      <th className="px-4 py-2.5 text-left">Role</th>
+                      <th className="px-4 py-2.5 text-right">Actions</th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    {filtered.map((user) => (
+                      <UserRow
+                        key={user.id}
+                        user={user}
+                        isEditing={editingId === user.id}
+                        onToggleEdit={() =>
+                          setEditingId((current) => (current === user.id ? null : user.id))
+                        }
+                        onCloseEdit={() => setEditingId(null)}
+                        onRequestRoleChange={(nextRole) => setPendingRoleChange({ user, nextRole })}
+                        roleChangePending={
+                          updateUser.isPending && pendingRoleChange?.user.id === user.id
+                        }
+                      />
+                    ))}
+                  </tbody>
+                </table>
+              </>
             )}
           </div>
 

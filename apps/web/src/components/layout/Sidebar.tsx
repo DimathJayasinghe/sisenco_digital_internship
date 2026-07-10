@@ -13,6 +13,7 @@ const NAV_LINKS = [
   { href: '/dashboard', label: 'Dashboard' },
   { href: '/projects', label: 'Projects' },
   { href: '/users', label: 'Team' },
+  { href: '/profile', label: 'Profile' },
 ];
 
 /** Collapsible sidebar for the (manager) route group — AGENTS/UI_UX_DESIGN.md §5/§7. */

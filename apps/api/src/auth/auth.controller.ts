@@ -1,10 +1,11 @@
-import { Body, Controller, Get, HttpCode, HttpStatus, Post, Res } from '@nestjs/common';
+import { Body, Controller, Get, HttpCode, HttpStatus, Patch, Post, Res } from '@nestjs/common';
 import { Throttle } from '@nestjs/throttler';
 import { AuthUser, User } from '@sisenco/shared-types';
 import { CookieOptions, Response } from 'express';
 import { CurrentUser, Public } from '../common/decorators';
 import { ACCESS_TOKEN_COOKIE } from './auth.constants';
 import { AuthService } from './auth.service';
+import { ChangePasswordDto } from './dto/change-password.dto';
 import { LoginDto } from './dto/login.dto';
 import { RegisterDto } from './dto/register.dto';
 
@@ -57,6 +58,19 @@ export class AuthController {
   @Get('me')
   async me(@CurrentUser('id') userId: AuthUser['id']): Promise<User> {
     return this.authService.getProfile(userId);
+  }
+
+  // Same throttle tier as login/register — brute-forcing the current-password
+  // check is exactly the login brute-force risk, just from a signed-in session.
+  @Throttle(AUTH_THROTTLE)
+  @HttpCode(HttpStatus.OK)
+  @Patch('change-password')
+  async changePassword(
+    @CurrentUser('id') userId: AuthUser['id'],
+    @Body() dto: ChangePasswordDto,
+  ): Promise<{ success: true }> {
+    await this.authService.changePassword(userId, dto);
+    return { success: true };
   }
 
   private attachSession(res: Response, user: User): void {

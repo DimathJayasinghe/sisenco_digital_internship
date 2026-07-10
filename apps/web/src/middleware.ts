@@ -5,7 +5,7 @@ import { NextRequest, NextResponse } from 'next/server';
 const AUTH_COOKIE = 'access_token';
 
 /** Routes any authenticated user may reach. */
-const MEMBER_PREFIXES = ['/reports', '/history'];
+const MEMBER_PREFIXES = ['/reports', '/history', '/profile'];
 /** Routes gated to MANAGER only. */
 const MANAGER_PREFIXES = ['/dashboard', '/projects', '/users'];
 const PROTECTED_PREFIXES = [...MEMBER_PREFIXES, ...MANAGER_PREFIXES];
@@ -69,6 +69,7 @@ export const config = {
   matcher: [
     '/reports/:path*',
     '/history/:path*',
+    '/profile/:path*',
     '/dashboard/:path*',
     '/projects/:path*',
     '/users/:path*',

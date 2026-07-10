@@ -31,3 +31,12 @@ export async function getCurrentUser(): Promise<User> {
   const { data } = await api.get<ApiResponse<User>>('/auth/me');
   return data.data;
 }
+
+export interface ChangePasswordPayload {
+  currentPassword: string;
+  newPassword: string;
+}
+
+export async function changePassword(payload: ChangePasswordPayload): Promise<void> {
+  await api.patch('/auth/change-password', payload);
+}
