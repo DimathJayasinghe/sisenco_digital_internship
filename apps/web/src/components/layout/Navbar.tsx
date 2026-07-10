@@ -66,7 +66,7 @@ export function Navbar(): ReactNode {
 
   return (
     <header className="border-b-2 border-zinc-900 bg-zinc-100 dark:border-zinc-300 dark:bg-zinc-900">
-      <div className="mx-auto flex h-16 max-w-2xl items-center justify-between gap-2 px-4 sm:px-6">
+      <div className="mx-auto flex h-16 max-w-4xl items-center justify-between gap-2 px-4 sm:px-6">
         <div className="flex items-center gap-3 sm:gap-6">
           <Link
             href="/reports"
@@ -84,12 +84,17 @@ export function Navbar(): ReactNode {
 
         <div className="hidden items-center gap-4 sm:flex">
           {user && (
-            <span className="text-sm text-zinc-600 dark:text-zinc-400">
+            <span className="whitespace-nowrap text-sm text-zinc-600 dark:text-zinc-400">
               {user.firstName} {user.lastName}
             </span>
           )}
           <ThemeToggle />
-          <Button variant="ghost" onClick={handleLogout} disabled={logout.isPending}>
+          <Button
+            variant="ghost"
+            className="whitespace-nowrap"
+            onClick={handleLogout}
+            disabled={logout.isPending}
+          >
             Sign out
           </Button>
         </div>
