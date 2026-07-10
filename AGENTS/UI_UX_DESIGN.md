@@ -230,7 +230,7 @@ The dashboard's job is surfacing patterns across the whole team at a glance. Whi
 - **Top:** metric cards, `grid-cols-1 md:grid-cols-3`, compliance rate emphasized per §6
 - **Middle:** 2-3 Recharts charts, `grid-cols-1 lg:grid-cols-2` or `lg:grid-cols-3`
 - **Bottom:** filterable data table of all team reports (§5's dense table spec)
-- **Floating chat widget** (bonus, if implemented): bottom-right, surface tone (`bg-zinc-800` dark / `bg-white` light) `border-2 border-zinc-300 shadow-brutal rounded-none`, toggleable
+- **Floating chat widget** (bonus — implemented, `components/ai/ChatWidget.tsx`): `fixed bottom-4 right-4` (`sm:bottom-6 sm:right-6`), rendered from `(manager)/layout.tsx` so it's available on every manager page, not just the dashboard route. A 48px violet square toggle button (`shadow-brutal-violet`, same press-on-hover interaction as `Button`'s primary variant) opens a `max-w-sm` panel: surface tone (`bg-zinc-800` dark / `bg-white` light) `border-2 shadow-brutal-lg rounded-none`, header + scrollable message list + a labeled `Input` + send `Button` footer. User messages are right-aligned solid-violet bubbles; assistant messages (and inline error text, reusing the same bubble style rather than a separate error treatment) are left-aligned, `bg-zinc-100`/`bg-zinc-900`. Message history is client-side/ephemeral — nothing is persisted server-side.
 
 ### Profile Page (shared, both roles)
 
