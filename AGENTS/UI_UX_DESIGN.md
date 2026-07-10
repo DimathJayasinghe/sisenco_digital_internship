@@ -213,9 +213,10 @@ The dashboard's job is surfacing patterns across the whole team at a glance. Whi
 
 ### Login / Register
 
-- Centered card (`max-w-sm`) on the plain canvas (`bg-zinc-900` dark / `bg-zinc-100` light) — the card's own border + hard shadow provide all the contrast needed, no secondary background color
-- Single column, `space-y-5` between fields
-- App name/logo above the form, `text-zinc-100`
+- Shared `app/(auth)/layout.tsx`: a two-column split at `lg` and up — a brand panel on the left (wordmark, hero tagline, and the landing page's three feature highlights, reusing its copy/icons verbatim), the form on the right. Below `lg` the panel is hidden entirely and it's just the centered form, same as before the panel existed.
+- Brand panel is **not** a violet fill — §1's "no color-blocking" rule rules that out. Violet stays scoped to the highlight icons only (`text-violet-600 dark:text-violet-400`, matching the landing page's own feature-card icons), same restraint as everywhere else. A low-opacity dot-grid (`radial-gradient`, decorative/non-text so it's exempt from contrast rules) fills the panel's own empty margins so they read as intentional structure, not dead space — this is what "the auth pages feel empty" turned into once a plain centered card wasn't enough on a wide viewport.
+- A `← Back` link (ghost-link style, matches the unauthorized page's pattern) sits top-left of the form side, linking to `/`, on both screen sizes.
+- Form itself: centered card (`max-w-sm`) on the plain canvas — the card's own border + hard shadow provide all the contrast needed, no secondary background color. Single column, `space-y-5` between fields.
 
 ### Team Member — Personal Report Page
 
