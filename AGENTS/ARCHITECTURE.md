@@ -186,11 +186,12 @@ In development the API listens on `http://localhost:3001` and the Next.js app on
 ## 6. AI Assistant Integration (Bonus Module) — Implemented
 
 - A dedicated `AiModule` in NestJS (`apps/api/src/ai/`): `AiController` (`@Roles(MANAGER)`, `POST /ai/chat`), `AiService`, `ChatMessageDto`.
-- When a Manager sends a chat message, the `AiService`:
-  1.  Fetches submitted/late reports from PostgreSQL for the current week, falling back to the most recent week with any submitted/late activity if the current week is empty.
-  2.  Formats them into a structured text context block (per member: project, hours, status, tasks completed/planned, blockers).
-  3.  Calls the Gemini API (`@google/genai`, model `gemini-3.5-flash` — see `apps/api/src/ai/ai.constants.ts`) with the context block as a `systemInstruction` and the manager's message as `contents`.
-  4.  Returns the response to the frontend as `{ reply: string }` (`ChatResponse` in `shared-types`) — not streamed; a plain request/response was chosen over SSE/streaming to keep both the NestJS and Next.js sides simpler for a bonus feature, at the cost of the manager waiting for the full reply rather than seeing it token-by-token.
+- When a Manager sends a chat message, the `AiService` builds three context blocks in parallel and concatenates them:
+  1.  **Roster** — every user's name and role (`TEAM_MEMBER`/`MANAGER`), so the assistant can answer questions like "is X a manager?".
+  2.  **Projects** — every project's name and active/archived status.
+  3.  **Reports** — submitted/late reports from PostgreSQL for the current week, falling back to the most recent week with any submitted/late activity if the current week is empty (per member: project, hours, status, tasks completed/planned, blockers).
+- Calls the Gemini API (`@google/genai`, model `gemini-3.5-flash` — see `apps/api/src/ai/ai.constants.ts`) with the combined context as a `systemInstruction` and the manager's message as `contents`.
+- Returns the response to the frontend as `{ reply: string }` (`ChatResponse` in `shared-types`) — not streamed; a plain request/response was chosen over SSE/streaming to keep both the NestJS and Next.js sides simpler for a bonus feature, at the cost of the manager waiting for the full reply rather than seeing it token-by-token.
 - Throttled tighter than the global rate limit (20 req/60s — `AI_CHAT_THROTTLE` in `ai.controller.ts`) since every request costs a paid external API call.
 - The chat widget (`components/ai/ChatWidget.tsx`) is rendered from `(manager)/layout.tsx` — available on every manager page, not just the dashboard route, so the assistant is reachable wherever a manager is working.
-- **Privacy:** report content (tasks, blockers, hours, member/project names) is sent to Google's Gemini API as context on every chat request. No credentials, emails, or raw database IDs are included in the context block. This is documented here and should also be called out in the project presentation per the assignment brief.
+- **Privacy:** team member names/roles, project names/status, and report content (tasks, blockers, hours) are sent to Google's Gemini API as context on every chat request. No credentials, emails, or raw database IDs are included in the context block. This scope is a subset of what a Manager can already see via `GET /users` and `GET /reports` — the assistant doesn't expose anything beyond the requester's existing permissions. This is documented here and should also be called out in the project presentation per the assignment brief.
