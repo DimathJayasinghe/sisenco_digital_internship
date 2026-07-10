@@ -90,8 +90,7 @@ export function ChatWidget(): ReactNode {
           <div ref={listRef} className="flex-1 space-y-3 overflow-y-auto p-4">
             {messages.length === 0 ? (
               <p className="text-sm text-zinc-600 dark:text-zinc-400">
-                Ask about this week&apos;s reports — who&apos;s submitted, what&apos;s blocked,
-                workload by project.
+                Ask about the team — roles, projects, this week&apos;s reports, blockers, workload.
               </p>
             ) : (
               messages.map((entry, index) => (
