@@ -9,7 +9,7 @@ Built as a **Turborepo monorepo**: NestJS API + Next.js web app sharing strict T
 | Frontend   | Next.js 14 (App Router), TailwindCSS, TanStack Query, Recharts |
 | Backend    | NestJS, Passport (JWT), Prisma                                 |
 | Database   | PostgreSQL (Neon serverless)                                   |
-| AI (bonus) | Anthropic Claude                                               |
+| AI (bonus) | Google Gemini                                                  |
 
 > The authoritative product/architecture/security/DB specs live in [`AGENTS/`](./AGENTS). Start with `AGENTS/technical_assignment.md`.
 
@@ -58,13 +58,13 @@ cp apps/api/.env.example apps/api/.env
 
 Required variables (see `apps/api/.env.example`):
 
-| Variable            | Description                                                       |
-| ------------------- | ----------------------------------------------------------------- |
-| `DATABASE_URL`      | Neon Postgres connection string (must include `?sslmode=require`) |
-| `JWT_SECRET`        | Secret for signing the auth JWT                                   |
-| `JWT_EXPIRES_IN`    | Token lifetime, e.g. `7d`                                         |
-| `FRONTEND_URL`      | `http://localhost:3000` (for CORS)                                |
-| `ANTHROPIC_API_KEY` | Optional — enables the AI chat assistant                          |
+| Variable         | Description                                                       |
+| ---------------- | ----------------------------------------------------------------- |
+| `DATABASE_URL`   | Neon Postgres connection string (must include `?sslmode=require`) |
+| `JWT_SECRET`     | Secret for signing the auth JWT                                   |
+| `JWT_EXPIRES_IN` | Token lifetime, e.g. `7d`                                         |
+| `FRONTEND_URL`   | `http://localhost:3000` (for CORS)                                |
+| `GEMINI_API_KEY` | Optional — enables the AI chat assistant                          |
 
 ## 3. Set up the database
 
@@ -120,7 +120,7 @@ What comes up:
 
 Configuration lives in `.env` (copied from `.env.docker.example`). `JWT_SECRET`
 is **required** — generate one with `openssl rand -base64 48`. The database
-credentials, seeded manager, optional `ANTHROPIC_API_KEY`, and host port mappings
+credentials, seeded manager, optional `GEMINI_API_KEY`, and host port mappings
 are all set there.
 
 Useful commands:

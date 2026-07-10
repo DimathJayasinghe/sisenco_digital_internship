@@ -99,7 +99,7 @@ Work proceeds in the phase order fixed by `AGENT_RULES.md`: **Backend → Fronte
 ## 6. Repository Hygiene
 
 - **`.gitignore`** (root) must cover: `node_modules/`, `.env`, `.env.local`, `.env.*.local`, build outputs (`dist/`, `.next/`, `.turbo/`), coverage, editor folders, and Prisma-generated client if applicable.
-- **`.env.example`** is committed and kept in sync whenever a new env var is introduced (`DATABASE_URL`, `JWT_SECRET`, `JWT_EXPIRES_IN`, `FRONTEND_URL`, `ANTHROPIC_API_KEY`).
+- **`.env.example`** is committed and kept in sync whenever a new env var is introduced (`DATABASE_URL`, `JWT_SECRET`, `JWT_EXPIRES_IN`, `FRONTEND_URL`, `GEMINI_API_KEY`).
 - **Lockfile** (`package-lock.json`) is committed and treated as source of truth — never hand-edit it.
 - **Database migrations** (`prisma/migrations/`) are committed. Never edit an applied migration; create a new one. Never modify the database out-of-band.
 - **No large binaries** in the repo. Diagrams/video are linked (as the deliverables specify), not committed.
